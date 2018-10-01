@@ -168,15 +168,16 @@ Object.keys(restApi).sort((a, b) => a.length - b.length)/* sort by length so low
 const dset = require('dset')
 
 function iter (curTree, first) {
-  let out = {}
+  let outD = {}
+  let outF = {}
 
   for (const methodID in curTree.methods) { // eslint-disable-line guard-for-in
     let ms = methodID.split('.')
+    let msCode = ms.map(s => s.replace(/-([a-z])/, (_, l) => l.toUpperCase()))
     let methodData = curTree.methods[methodID]
 
-    let code = ''
     if (methodData.param) {
-      code = `(...params) => {
+      dset(outF, msCode, `(...params) => {
         ${first ? `let url = "/1.0/${ms.join('/')}/"` : `url += "${ms.join('/')}/"`}
         let pc = ${methodData.last.length}
         let p = ${JSON.stringify(methodData.last)}
@@ -189,16 +190,14 @@ function iter (curTree, first) {
         url += params.join('/') + '/'
 
         return ${iter(methodData)}
-      }`
+      }`)
     } else {
-      code = `(params) => {
+      dset(outD, msCode, `(params) => {
         ${first ? `let url = "/1.0/${ms.join('/')}/"` : `url += "${ms.join('/')}/"`}
 
         return client.request("${ms[ms.length - 1]}", url, ${JSON.stringify(methodData.me)})
-      }`
+      }`)
     }
-
-    dset(out, ms, code)
   }
 
   function functionObjectStringify (o) { // stringifies as object with strings treated as literal code
@@ -215,7 +214,7 @@ function iter (curTree, first) {
     return '{' + a.join(',') + '}'
   }
 
-  return functionObjectStringify(out)
+  return 'merge(' + [outF, outD].map(functionObjectStringify).join(', ') + ')'
 }
 
 // beautify & minify code
