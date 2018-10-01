@@ -21,5 +21,14 @@
     "dlv": "^1.1.2",
     "dset": "^2.0.1",
     "node-fetch": "^2.2.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkg20001/lxdn.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mkg20001/lxdn/issues"
+  },
+  "homepage": "https://github.com/mkg20001/lxdn#readme"
 }
