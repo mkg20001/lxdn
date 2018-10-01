@@ -1,0 +1,1067 @@
+{
+  "/": {
+    "GET": {
+      "description": "List of supported APIs",
+      "authentication": [
+        "guest"
+      ],
+      "operation": "sync",
+      "return": "list of supported API endpoint URLs"
+    }
+  },
+  "/1.0/": {
+    "GET": {
+      "description": "Server configuration and environment information",
+      "authentication": [
+        "guest, untrusted",
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "Dict representing server state"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "Replaces the server configuration or other properties",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "PATCH": {
+      "comment": "ETag supported",
+      "description": "Updates the server configuration or other properties",
+      "introduced": "with API extension `patch`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/certificates": {
+    "GET": {
+      "description": "list of trusted certificates",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of URLs for trusted certificates"
+    },
+    "POST": {
+      "description": "add a new trusted certificate",
+      "authentication": [
+        "trusted",
+        "untrusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/certificates/<fingerprint>": {
+    "GET": {
+      "description": "trusted certificate information",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing a trusted certificate"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "Replaces the certificate properties",
+      "introduced": "with API extension `certificate_update`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "PATCH": {
+      "comment": "ETag supported",
+      "description": "Updates the certificate properties",
+      "introduced": "with API extension `certificate_update`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "DELETE": {
+      "description": "Remove a trusted certificate",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/containers": {
+    "GET": {
+      "description": "List of containers",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of URLs for containers this server publishes"
+    },
+    "POST": {
+      "comment": "optional `?target=<member>`",
+      "description": "Create a new container",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    }
+  },
+  "/1.0/containers/<name>": {
+    "GET": {
+      "description": "Container information",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict of the container configuration and current state."
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "replaces container configuration or restore snapshot",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    },
+    "PATCH": {
+      "comment": "ETag supported",
+      "description": "update container configuration",
+      "introduced": "with API extension `patch`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "POST": {
+      "comment": "optional `?target=<member>`",
+      "description": "used to rename/migrate the container",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    },
+    "DELETE": {
+      "description": "remove the container",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    }
+  },
+  "/1.0/containers/<name>/console": {
+    "GET": {
+      "description": "returns the contents of the container's console  log",
+      "authentication": [
+        "trusted"
+      ],
+      "return": "the contents of the console log"
+    },
+    "POST": {
+      "description": "attach to a container's console devices",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "standard error"
+    },
+    "DELETE": {
+      "description": "empty the container's console log",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "Sync",
+      "return": "empty response or standard error"
+    }
+  },
+  "/1.0/containers/<name>/exec": {
+    "POST": {
+      "description": "run a remote command",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation + optional websocket information or standard error"
+    }
+  },
+  "/1.0/containers/<name>/files": {
+    "GET": {
+      "comment": "`?path=/path/inside/the/container`",
+      "description": "download a file or directory listing from the container",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "if the type of the file is a directory, the return is a sync",
+      "`x-lxd-uid`": "0",
+      "`x-lxd-gid`": "0",
+      "`x-lxd-mode`": "0700",
+      "`x-lxd-type`": "one of `directory` or `file`"
+    },
+    "POST": {
+      "comment": "`?path=/path/inside/the/container`",
+      "description": "upload a file to the container",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error",
+      "standard": "http file upload",
+      "`x-lxd-uid`": "0",
+      "`x-lxd-gid`": "0",
+      "`x-lxd-mode`": "0700",
+      "`x-lxd-type`": "one of `directory`, `file` or `symlink`",
+      "`x-lxd-write`": "overwrite (or append, introduced with API extension `file_append`)"
+    },
+    "DELETE": {
+      "comment": "`?path=/path/inside/the/container`",
+      "description": "delete a file in the container",
+      "introduced": "with API extension `file_delete`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/containers/<name>/snapshots": {
+    "GET": {
+      "description": "List of snapshots",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of URLs for snapshots for this container"
+    },
+    "POST": {
+      "description": "create a new snapshot",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    }
+  },
+  "/1.0/containers/<name>/snapshots/<name>": {
+    "GET": {
+      "description": "Snapshot information",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing the snapshot"
+    },
+    "POST": {
+      "description": "used to rename/migrate the snapshot",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    },
+    "DELETE": {
+      "description": "remove the snapshot",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    }
+  },
+  "/1.0/containers/<name>/state": {
+    "GET": {
+      "description": "current state",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing current state"
+    },
+    "PUT": {
+      "description": "change the container state",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    }
+  },
+  "/1.0/containers/<name>/logs": {
+    "GET": {
+      "description": "Returns a list of the log files available for this container.",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "Sync",
+      "return": "a list of the available log files"
+    }
+  },
+  "/1.0/containers/<name>/logs/<logfile>": {
+    "GET": {
+      "description": "returns the contents of a particular log file.",
+      "authentication": [
+        "trusted"
+      ],
+      "return": "the contents of the log file"
+    },
+    "DELETE": {
+      "description": "delete a particular log file.",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "Sync",
+      "return": "empty response or standard error"
+    }
+  },
+  "/1.0/containers/<name>/metadata": {
+    "GET": {
+      "description": "Container metadata",
+      "introduced": "with API extension `container_edit_metadata`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "Sync",
+      "return": "dict representing container metadata"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "Replaces container metadata",
+      "introduced": "with API extension `container_edit_metadata`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/containers/<name>/metadata/templates": {
+    "GET": {
+      "comment": "`?path=<template>`",
+      "description": "Content of a container template",
+      "introduced": "with API extension `container_edit_metadata`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "Sync",
+      "return": "the content of the template"
+    },
+    "POST": {
+      "comment": "`?path=<template>`",
+      "description": "Add a continer template",
+      "introduced": "with API extension `container_edit_metadata`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "Sync",
+      "return": "standard return value or standard error",
+      "standard": "http file upload."
+    },
+    "PUT": {
+      "comment": "`?path=<template>`",
+      "description": "Replace content of a template",
+      "introduced": "with API extension `container_edit_metadata`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "Sync",
+      "return": "standard return value or standard error",
+      "standard": "http file upload."
+    },
+    "DELETE": {
+      "comment": "`?path=<template>`",
+      "description": "Delete a container template",
+      "introduced": "with API extension `container_edit_metadata`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "Sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/containers/<name>/backups": {
+    "GET": {
+      "description": "List of backups for the container",
+      "introduced": "with API extension `container_backup`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "a list of backups for the container"
+    },
+    "POST": {
+      "description": "Create a new backup",
+      "introduced": "with API extension `container_backup`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "returns": "background operation or standard error"
+    }
+  },
+  "/1.0/containers/<name>/backups/<name>": {
+    "GET": {
+      "description": "Backup information",
+      "introduced": "with API extension `container_backup`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "returns": "dict of the backup"
+    },
+    "DELETE": {
+      "description": "remove the backup",
+      "introduced": "with API extension `container_backup`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    },
+    "POST": {
+      "description": "used to rename the backup",
+      "introduced": "with API extension `container_backup`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    }
+  },
+  "/1.0/containers/<name>/backups/<name>/export": {
+    "GET": {
+      "description": "fetch the backup tarball",
+      "introduced": "with API extension `container_backup`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict containing the backup tarball"
+    }
+  },
+  "/1.0/events": {
+    "GET": {
+      "comment": "`?type=operation,logging`",
+      "description": "websocket upgrade",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "(notification about creation, updates and termination of all background operations)",
+      "return": "none (never ending flow of events)",
+      "type": "comma separated list of notifications to subscribe to (defaults to all)",
+      "logging": "(every log entry from the server)",
+      "lifecycle": "(container lifecycle events)"
+    }
+  },
+  "/1.0/images": {
+    "GET": {
+      "description": "list of images (public or private)",
+      "authentication": [
+        "guest",
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of URLs for images this server publishes"
+    },
+    "POST": {
+      "description": "create and publish a new image",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error",
+      "standard": "http file upload",
+      "source": "container dictionary (makes an image out of a local container)",
+      "remote": "image URL dictionary (downloads a remote image)",
+      "`x-lxd-fingerprint`": "SHA-256 (if set, uploaded file must match)",
+      "`x-lxd-filename`": "FILENAME (used for export)",
+      "`x-lxd-public`": "true/false (defaults to false)",
+      "`x-lxd-properties`": "URL-encoded key value pairs without duplicate keys (optional properties)"
+    }
+  },
+  "/1.0/images/<fingerprint>": {
+    "GET": {
+      "comment": "optional `?secret=SECRET`",
+      "description": "Image description and metadata",
+      "authentication": [
+        "guest",
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing an image properties"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "Replaces the image properties, update information and visibility",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "PATCH": {
+      "comment": "ETag supported",
+      "description": "Updates the image properties, update information and visibility",
+      "introduced": "with API extension `patch`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "DELETE": {
+      "description": "Remove an image",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operaton or standard error"
+    }
+  },
+  "/1.0/images/<fingerprint>/export": {
+    "GET": {
+      "comment": "optional `?secret=SECRET`",
+      "description": "Download the image tarball",
+      "authentication": [
+        "guest",
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "Raw file or standard error"
+    }
+  },
+  "/1.0/images/<fingerprint>/refresh": {
+    "POST": {
+      "description": "Refresh an image from its origin",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "Background operation or standard error"
+    }
+  },
+  "/1.0/images/<fingerprint>/secret": {
+    "POST": {
+      "description": "Generate a random token and tell LXD to expect it be used by a guest",
+      "authentication": [
+        "guest",
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    }
+  },
+  "/1.0/images/aliases": {
+    "GET": {
+      "description": "list of aliases (public or private based on image visibility)",
+      "authentication": [
+        "guest",
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of URLs for aliases this server knows about"
+    },
+    "POST": {
+      "description": "create a new alias",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/images/aliases/<name>": {
+    "GET": {
+      "description": "Alias description and target",
+      "authentication": [
+        "guest",
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing an alias description and target"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "Replaces the alias target or description",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "PATCH": {
+      "comment": "ETag supported",
+      "description": "Updates the alias target or description",
+      "introduced": "with API extension `patch`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "POST": {
+      "description": "rename an alias",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "DELETE": {
+      "description": "Remove an alias",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/networks": {
+    "GET": {
+      "description": "list of networks",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of URLs for networks that are current defined on the host"
+    },
+    "POST": {
+      "description": "define a new network",
+      "introduced": "with API extension `network`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/networks/<name>": {
+    "GET": {
+      "description": "information about a network",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing a network"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "replace the network information",
+      "introduced": "with API extension `network`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "PATCH": {
+      "comment": "ETag supported",
+      "description": "update the network information",
+      "introduced": "with API extension `network`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "POST": {
+      "description": "rename a network",
+      "introduced": "with API extension `network`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "DELETE": {
+      "description": "remove a network",
+      "introduced": "with API extension `network`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/networks/<name>/state": {
+    "GET": {
+      "description": "network state",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing a network's state"
+    }
+  },
+  "/1.0/operations": {
+    "GET": {
+      "description": "list of operations",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of URLs for operations that are currently going on/queued"
+    }
+  },
+  "/1.0/operations/<uuid>": {
+    "GET": {
+      "description": "background operation",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing a background operation"
+    },
+    "DELETE": {
+      "description": "cancel an operation. Calling this will change the state to \"cancelling\" rather than actually removing the entry.",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/operations/<uuid>/wait": {
+    "GET": {
+      "comment": "optional `?timeout=30`",
+      "description": "Wait for an operation to finish",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict of the operation after it's reached its final state"
+    }
+  },
+  "/1.0/operations/<uuid>/websocket": {
+    "GET": {
+      "comment": "`?secret=SECRET`",
+      "description": "This connection is upgraded into a websocket connection",
+      "authentication": [
+        "guest",
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "websocket stream or standard error"
+    }
+  },
+  "/1.0/profiles": {
+    "GET": {
+      "description": "List of configuration profiles",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of URLs to defined profiles"
+    },
+    "POST": {
+      "description": "define a new profile",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/profiles/<name>": {
+    "GET": {
+      "description": "profile configuration",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing the profile content"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "replace the profile information",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "PATCH": {
+      "comment": "ETag supported",
+      "description": "update the profile information",
+      "introduced": "with API extension `patch`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "POST": {
+      "description": "rename a profile",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "DELETE": {
+      "description": "remove a profile",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/storage-pools": {
+    "GET": {
+      "description": "list of storage pools",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of storage pools that are currently defined on the host"
+    },
+    "POST": {
+      "description": "create a new storage pool",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/storage-pools/<name>": {
+    "GET": {
+      "description": "information about a storage pool",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing a storage pool"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "replace the storage pool information",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "PATCH": {
+      "description": "update the storage pool configuration",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "DELETE": {
+      "description": "delete a storage pool",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/storage-pools/<name>/resources": {
+    "GET": {
+      "description": "information about the resources available to the storage pool",
+      "introduced": "with API extension `resources`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing the storage pool resources"
+    }
+  },
+  "/1.0/storage-pools/<name>/volumes": {
+    "GET": {
+      "description": "list of storage volumes",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of storage volumes that currently exist on a given storage pool"
+    },
+    "POST": {
+      "description": "create a new storage volume on a given storage pool",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync or async (when copying an existing volume)",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/storage-pools/<pool>/volumes/<type>": {
+    "POST": {
+      "description": "create a new storage volume of a particular type on a given storage pool",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync or async (when copying an existing volume)",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/storage-pools/<pool>/volumes/<type>/<name>": {
+    "POST": {
+      "description": "rename a storage volume on a given storage pool",
+      "introduced": "with API extension `storage_api_volume_rename`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync or async (when moving to a different pool)",
+      "return": "standard return value or standard error"
+    },
+    "GET": {
+      "description": "information about a storage volume of a given type on a storage pool",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing a storage volume"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "replace the storage volume information or restore from snapshot",
+      "introduced": "with API extension `storage`, `storage_api_volume_snapshots`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "PATCH": {
+      "comment": "ETag supported",
+      "description": "update the storage volume information",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    },
+    "DELETE": {
+      "description": "delete a storage volume of a given type on a given storage pool",
+      "introduced": "with API extension `storage`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "standard return value or standard error"
+    }
+  },
+  "/1.0/storage-pools/<pool>/volumes/<type>/<name>/snapshots": {
+    "GET": {
+      "description": "List of volume snapshots",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of URLs for snapshots for this volume"
+    },
+    "POST": {
+      "description": "create a new volume snapshot",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    }
+  },
+  "/1.0/storage-pools/<pool>/volumes/<type>/<volume>/snapshots/name": {
+    "GET": {
+      "description": "Snapshot information",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing the snapshot"
+    },
+    "PUT": {
+      "description": "Volume snapshot information",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing the volume snapshot"
+    },
+    "POST": {
+      "description": "used to rename the volume snapshot",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    },
+    "DELETE": {
+      "description": "remove the volume snapshot",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "async",
+      "return": "background operation or standard error"
+    }
+  },
+  "/1.0/resources": {
+    "GET": {
+      "description": "information about the resources available to the LXD server",
+      "introduced": "with API extension `resources`",
+      "authentication": [
+        "guest, untrusted",
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing the system resources"
+    }
+  },
+  "/1.0/cluster": {
+    "GET": {
+      "description": "information about a cluster (such as networks and storage pools)",
+      "introduced": "with API extension `clustering`",
+      "authentication": [
+        "trusted",
+        "untrusted"
+      ],
+      "operation": "sync",
+      "return": "dict representing a cluster"
+    },
+    "PUT": {
+      "description": "bootstrap or join a cluster, or disable clustering on this node",
+      "introduced": "with API extension `clustering`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync or async",
+      "return": "various payloads depending on the input"
+    }
+  },
+  "/1.0/cluster/members": {
+    "GET": {
+      "description": "list of LXD members in the cluster",
+      "introduced": "with API extension `clustering`",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": "sync",
+      "return": "list of cluster members"
+    }
+  }
+}

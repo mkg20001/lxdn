@@ -1,0 +1,19 @@
+{
+  "name": "lxdn",
+  "version": "0.0.1",
+  "description": "Yet another LXD client for nodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "lxd",
+    "client",
+    "lxc"
+  ],
+  "author": "Maciej Krüger <mkg20001@gmail.com>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "node-fetch": "^2.2.0"
+  }
+}
