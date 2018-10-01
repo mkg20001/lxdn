@@ -13,7 +13,8 @@
     "GET": {
       "description": "Server configuration and environment information",
       "authentication": [
-        "guest, untrusted",
+        "guest",
+        "untrusted",
         "trusted"
       ],
       "operation": "sync",
@@ -1025,7 +1026,8 @@
       "description": "information about the resources available to the LXD server",
       "introduced": "with API extension `resources`",
       "authentication": [
-        "guest, untrusted",
+        "guest",
+        "untrusted",
         "trusted"
       ],
       "operation": "sync",

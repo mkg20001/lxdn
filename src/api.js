@@ -196,7 +196,7 @@ module.exports = (t => ({
         get: e => (url += "resources/get/", t.request("get", url, {
             description: "information about the resources available to the LXD server",
             introduced: "with API extension `resources`",
-            authentication: [ "guest, untrusted", "trusted" ],
+            authentication: [ "guest", "untrusted", "trusted" ],
             operation: "sync",
             return: "dict representing the system resources"
         }))

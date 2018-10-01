@@ -58,7 +58,7 @@ parsed.forEach(prop => {
     if (me.comment) {
       meOut.comment = me.comment
     }
-    me.meta.authentication = me.meta.authentication.split(' or ')
+    me.meta.authentication = me.meta.authentication.replace(' or ', ', ').split(', ')
     if (me.meta.operation === 'N/A') {
       delete me.meta.operation
     }
