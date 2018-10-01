@@ -18,11 +18,12 @@
   "license": "MPL-2.0",
   "dependencies": {
     "debug": "^4.0.1",
-    "dlv": "^1.1.2",
-    "dset": "^2.0.1",
     "node-fetch": "^2.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "dset": "^2.0.1",
+    "terser": "^3.9.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mkg20001/lxdn.git"

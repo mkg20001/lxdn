@@ -220,4 +220,9 @@ function iter (curTree, first) {
 }
 
 // console.log(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree)))
-fs.writeFileSync('../src/api.js', String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree)))
+
+let code = require('terser').minify(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree)), {output: {beautify: true}})
+if (code.error) {
+  throw code.error
+}
+fs.writeFileSync('../src/api.js', code.code)

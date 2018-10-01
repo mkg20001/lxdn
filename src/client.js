@@ -44,7 +44,7 @@ class Client {
       this._key = authenticate.key
     }
 
-    this.api = createApi(client)
+    this.api = createApi(this)
   }
 
   request () {
