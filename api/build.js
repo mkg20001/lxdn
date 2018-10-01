@@ -219,4 +219,5 @@ function iter (curTree, first) {
   return oi(out)
 }
 
-console.log(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree)))
+// console.log(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree)))
+fs.writeFileSync('../src/api.js', String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree)))

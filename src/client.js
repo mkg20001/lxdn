@@ -7,6 +7,8 @@ const crypto = require('crypto')
 const getReqId = () => crypto.randomBytes('2').toString('hex')
 const fetch = require('node-fetch')
 
+const createApi = require('./api')
+
 class Client {
   constructor (host, authenticate) {
     log('creating client for %s', host || '<local>')
@@ -41,6 +43,8 @@ class Client {
       this._cert = authenticate.cert
       this._key = authenticate.key
     }
+
+    this.api = createApi(client)
   }
 
   request () {
