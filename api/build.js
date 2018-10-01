@@ -163,21 +163,6 @@ Object.keys(restApi).sort((a, b) => a.length - b.length).forEach(path => {
         }
       }
     }
-
-    /* stack.forEach(stackEl => {
-      let el = stackEl.slice(0)
-      let last = el.pop()
-      let elId = el.join('.')
-      if (!curTree[elId]) {
-        if (last[0] === 'FIRE') {
-          code.push(['addRestMethod', el, me])
-        } else {
-          code.push(['addParameterFunction', el, last])
-        }
-      } else {
-        code.push(['cur = dlv', el])
-      }
-    }) */
   }
 })
 
@@ -193,20 +178,22 @@ function iter (curTree, first) {
     let code = ''
     if (md.param) {
       code = `(...params) => {
-        ${first ? 'let url = "/1.0/"' : ''}
+        ${first ? `let url = "/1.0/${ms.join('/')}/"` : `url += "${ms.join('/')}/"`}
         let pc = ${md.last.length}
         let p = ${JSON.stringify(md.last)}
         if (params.length < pc) {
           throw new Error('Missing parameter ' + p.slice(params.length).join(','))
         }
-        url += ${ms.join('/')} + '/'
+        if (params.length > pc) {
+          throw new Error('Too many parameters')
+        }
+        url += params.join('/') + '/'
 
-        return ${iter(md.methods)}
+        return ${iter(md)}
       }`
     } else {
       code = `(params) => {
-        ${first ? 'let url = "/1.0/"' : ''}
-        url += ${ms.join('/')} + '/'
+        ${first ? `let url = "/1.0/${ms.join('/')}/"` : `url += "${ms.join('/')}/"`}
 
         return client.request("${ms[ms.length - 1]}", url, ${JSON.stringify(md.me)})
       }`
@@ -232,5 +219,4 @@ function iter (curTree, first) {
   return oi(out)
 }
 
-console.log(iter(tree))
 console.log(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree)))
