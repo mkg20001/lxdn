@@ -84,3 +84,153 @@ parsed.forEach(prop => {
 // console.log(require('util').inspect(out, {depth: null, colors: true}))
 
 fs.writeFileSync('./rest-api.json', JSON.stringify(out, null, 2))
+
+/* conversion:
+
+[ 'storage-pools',
+  '<pool>',
+  'volumes',
+  '<type>',
+  '<name>',
+  'snapshots' ]
+
+to
+
+<Promise> api.storagePools(<String> pool).volumes(<String> type, <String> name).snapshots.get()
+
+*/
+
+function c (name) {
+  return name.replace(/[<>]/gmi, '')
+  /* name = name.replace(/[<>]/gmi, '')
+  name = name.replace(/-([a-z])/gmi, (_, l) => l.toUpperCase())
+  return name */
+}
+
+let restApi = out
+let tree = {
+  methods: {}
+}
+
+delete restApi['/']
+delete restApi['/1.0/']
+Object.keys(restApi).sort((a, b) => a.length - b.length).forEach(path => {
+  const obj = restApi[path]
+  let name = path.replace('/1.0/', '').split('/')
+  for (const method in obj) { // eslint-disable-line guard-for-in
+    const me = obj[method]
+    let stack = name.slice(0).concat(method.toLowerCase())
+    stack = stack.reduce((a, b) => {
+      let la = a[a.length - 1]
+      if (Array.isArray(la[la.length - 1])) { // is function, accepts only params
+        if (b.startsWith('<')) {
+          la[la.length - 1].push(c(b))
+        } else {
+          a.push([c(b)])
+        }
+      } else if (b.startsWith('<')) {
+        la.push([c(b)])
+      } else {
+        la.push(c(b))
+      }
+
+      return a
+    }, [[]])
+
+    stack[stack.length - 1].push(['FIRE']) // so method is a function and knows what to do
+
+    let curTree = tree
+
+    while (stack.length) {
+      let el = stack.shift()
+      let last = el.pop()
+      let elId = el.join('.')
+      let isLast = !stack.length
+      if (!curTree.methods) {
+        curTree.methods = {}
+      }
+      if (isLast) {
+        curTree.methods[elId] = {
+          last,
+          me
+        }
+      }
+      curTree = tree.methods[elId]
+      if (!curTree && !isLast) {
+        curTree = tree.methods[elId] = {
+          last,
+          param: true
+        }
+      }
+    }
+
+    /* stack.forEach(stackEl => {
+      let el = stackEl.slice(0)
+      let last = el.pop()
+      let elId = el.join('.')
+      if (!curTree[elId]) {
+        if (last[0] === 'FIRE') {
+          code.push(['addRestMethod', el, me])
+        } else {
+          code.push(['addParameterFunction', el, last])
+        }
+      } else {
+        code.push(['cur = dlv', el])
+      }
+    }) */
+  }
+})
+
+const dset = require('dset')
+
+function iter (curTree, first) {
+  let out = {}
+
+  for (const mid in curTree.methods) { // eslint-disable-line guard-for-in
+    let ms = mid.split('.')
+    let md = curTree.methods[mid]
+
+    let code = ''
+    if (md.param) {
+      code = `(...params) => {
+        ${first ? 'let url = "/1.0/"' : ''}
+        let pc = ${md.last.length}
+        let p = ${JSON.stringify(md.last)}
+        if (params.length < pc) {
+          throw new Error('Missing parameter ' + p.slice(params.length).join(','))
+        }
+        url += ${ms.join('/')} + '/'
+
+        return ${iter(md.methods)}
+      }`
+    } else {
+      code = `(params) => {
+        ${first ? 'let url = "/1.0/"' : ''}
+        url += ${ms.join('/')} + '/'
+
+        return client.request("${ms[ms.length - 1]}", url, ${JSON.stringify(md.me)})
+      }`
+    }
+
+    dset(out, ms, code)
+  }
+
+  function oi (o) {
+    let a = []
+    for (const key in o) { // eslint-disable-line guard-for-in
+      let v = JSON.stringify(key) + ':'
+      if (typeof o[key] === 'object') {
+        v += oi(o[key])
+      } else {
+        v += o[key]
+      }
+      a.push(v)
+    }
+    return '{' + a.join(',') + '}'
+  }
+
+  return oi(out)
+}
+
+console.log(iter(tree))
+console.log(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree)))

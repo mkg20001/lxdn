@@ -14,6 +14,9 @@
   "author": "Maciej Krüger <mkg20001@gmail.com>",
   "license": "MPL-2.0",
   "dependencies": {
+    "debug": "^4.0.1",
+    "dlv": "^1.1.2",
+    "dset": "^2.0.1",
     "node-fetch": "^2.2.0"
   }
 }
