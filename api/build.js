@@ -180,13 +180,14 @@ function iter (curTree, first) {
     let methodData = curTree.methods[methodID]
 
     let ms = methodID.split('.')
+    let msFull = ms.slice(0)
     let httpVerb
 
     if (!methodData.param) {
       httpVerb = ms.pop().toUpperCase()
     }
 
-    let msCode = ms.map(s => s.replace(/-([a-z])/, (_, l) => l.toUpperCase()))
+    let msCode = msFull.map(s => s.replace(/-([a-z])/, (_, l) => l.toUpperCase()))
 
     if (methodData.param) {
       dset(outF, msCode, `(...params) => {
