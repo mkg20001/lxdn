@@ -1,5 +1,10 @@
 'use strict'
 
+/* eslint-disable no-nested-ternary */
+/* eslint-disable guard-for-in */
+
+process.chdir(__dirname)
+
 const fs = require('fs')
 const content = String(fs.readFileSync('./rest-api.md'))
 let data = content.split('# API details')[1].split('\n').filter(l => l.trim())
@@ -172,9 +177,16 @@ function iter (curTree, first) {
   let outF = {}
 
   for (const methodID in curTree.methods) { // eslint-disable-line guard-for-in
-    let ms = methodID.split('.')
-    let msCode = ms.map(s => s.replace(/-([a-z])/, (_, l) => l.toUpperCase()))
     let methodData = curTree.methods[methodID]
+
+    let ms = methodID.split('.')
+    let httpVerb
+
+    if (!methodData.param) {
+      httpVerb = ms.pop().toUpperCase()
+    }
+
+    let msCode = ms.map(s => s.replace(/-([a-z])/, (_, l) => l.toUpperCase()))
 
     if (methodData.param) {
       dset(outF, msCode, `(...params) => {
@@ -193,9 +205,9 @@ function iter (curTree, first) {
       }`)
     } else {
       dset(outD, msCode, `(params) => {
-        ${first ? `let url = "/1.0/${ms.join('/')}/"` : `url += "${ms.join('/')}/"`}
+        ${first ? `let url = "/1.0/${ms.join('/')}/"` : (ms.length ? `url += "${ms.join('/')}/"` : '')}
 
-        return client.request("${ms[ms.length - 1]}", url, ${JSON.stringify(methodData.me)})
+        return client.request("${httpVerb}", url, ${JSON.stringify(methodData.me)}, params)
       }`)
     }
   }
