@@ -8,6 +8,62 @@ const fetch = require('node-fetch')
 
 const createApi = require('./api')
 
+class AsyncOperation {
+  constructor (client, opUrl, data) {
+    this.client = client
+    this.operation = client.api.operations(data.id)
+    this.id = data.id
+    this.opUrl = opUrl
+
+    this.handleResp(data)
+    this.verifySuccess()
+  }
+  handleResp (data) {
+    this.opClass = data.class
+    this.createdAt = Date.parse(data.created_at)
+    this.updatedAt = Date.parse(data.updated_at)
+    this.status = data.status
+    this.statusCode = data.status_code
+    this.resources = data.resources
+    this.metadata = data.metadata
+    this.mayCancel = data.may_cancel
+    this.err = data.err
+  }
+
+  async refresh () {
+    let data = await this.operation.get()
+    this.handleResp(data)
+    return data
+  }
+
+  async cancel () {
+    if (this.mayCancel && this.stillRunning) {
+      await this.operation.delete()
+      this.refresh()
+    } else {
+      throw new Error('Failed to cancel: Operation ' + (this.mayCancel ? 'cannot be canceled' : 'already completed'))
+    }
+  }
+
+  async wait (timeout) {
+    let data = await this.operation.wait.get(null, timeout ? {timeout} : null)
+    this.handleResp(data)
+    this.verifySuccess()
+    return data
+  }
+
+  async websocket () {
+    let url = this.client.wsAddress + '/1.0/operations/' + this.id + '/websocket?secret=' + this.metadata.secret
+    // TODO: establish websocket connection
+  }
+
+  verifySuccess () {
+    if (this.err) {
+      throw new Error('Operation failure: ' + this.err)
+    }
+  }
+}
+
 class Client {
   constructor (host, auth) {
     log('creating client for %s', host || '<local>')
@@ -69,21 +125,31 @@ class Client {
   }
 
   async connect () {
-    this.info = {
-      authentication: 'guest'
+    this.info = { // stub so client 'works'
+      authentication: 'guest',
+      api_extensions: []
     }
-    this.info = await this.api.info.get()
+    let p = this.api.info.get()
+    this.info.wait = p // makes client wait for connection
+    this.info = await p
     log('connected')
   }
 
-  async request (method, url, apiDesc, params) {
+  async request (method, url, apiDesc, params, queryParams, headers) {
     if (!this.info) {
       await this.connect()
+    }
+    if (this.info.wait) {
+      await this.info.wait
     }
 
     const reqId = ++ReqID
 
-    const options = {headers: {}} // TODO: rejectUnauthorized false and cert auth
+    if (!headers) {
+      headers = {}
+    }
+
+    const options = {headers} // TODO: rejectUnauthorized false and cert auth
 
     if (method !== 'GET') {
       options.method = method
@@ -92,6 +158,10 @@ class Client {
 
     if (url === '/1.0/info/') {
       url = '/1.0/'
+    }
+
+    if (queryParams) {
+      url += '?' + String(new URLSearchParams(queryParams))
     }
 
     log('[req#%i]: %s %s %o', reqId, method, url, params)
@@ -116,7 +186,9 @@ class Client {
       case 'sync': {
         return resp.metadata
       }
-      // TODO: async
+      case 'async': {
+        return new AsyncOperation(this, resp.operation, resp.metadata)
+      }
       default: {
         throw new TypeError('Unknown response type ' + resp.type)
       }

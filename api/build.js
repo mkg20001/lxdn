@@ -206,10 +206,10 @@ function iter (curTree, first) {
         return ${iter(methodData)}
       }`)
     } else {
-      dset(outD, msCode, `(params) => {
+      dset(outD, msCode, `(params, queryParams, headers) => {
         ${first ? `let url = "/1.0/${ms.join('/')}/"` : (ms.length ? `url += "${ms.join('/')}/"` : '')}
 
-        return client.request("${httpVerb}", url, ${JSON.stringify(methodData.me)}, params)
+        return client.request("${httpVerb}", url, ${JSON.stringify(methodData.me)}, params, queryParams, headers)
       }`)
     }
   }
