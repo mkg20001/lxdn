@@ -3,52 +3,95 @@
 const debug = require('debug')
 const log = debug('lxdn')
 
-const crypto = require('crypto')
-const getReqId = () => crypto.randomBytes('2').toString('hex')
+let ReqID = 0
 const fetch = require('node-fetch')
 
 const createApi = require('./api')
 
 class Client {
-  constructor (host, authenticate) {
+  constructor (host, auth) {
     log('creating client for %s', host || '<local>')
 
     let protocol, hostname, port
     if (host) {
-      var hostUrl = URL.parse(host)
+      const hostUrl = URL.parse(host)
       protocol = hostUrl.protocol
       hostname = hostUrl.hostname
       port = hostUrl.port
     }
 
     // local
-    this._local = host === undefined
+    this.isLocal = host === undefined
 
     // path
     if (host) {
-      this._path = protocol + '//' + hostname
-      this._path += port ? ':' + port + '/' : '/'
+      this.address = protocol + '//' + hostname
+      if (port) {
+        this.address += ':' + port
+      }
     } else {
-      this._path = 'http://unix:/var/lib/lxd/unix.socket:/'
+      this.address = 'http://unix:/var/lib/lxd/unix.socket:'
     }
 
     // websocket path
     if (host) {
-      this._wsPath = 'ws://' + hostname + (port ? ':' + 'port' : '') + '/'
+      this.wsAddress = 'ws://' + hostname + (port ? ':' + 'port' : '') + '/'
     } else {
-      this._wsPath = 'ws+unix:///var/lib/lxd/unix.socket:/'
+      this.wsAddress = 'ws+unix:///var/lib/lxd/unix.socket:'
     }
 
-    if (authenticate && authenticate.cert && authenticate.key) {
-      this._cert = authenticate.cert
-      this._key = authenticate.key
+    if (auth && auth.cert && auth.key) {
+      this.auth = auth
     }
 
     this.api = createApi(this)
   }
 
-  request () {
+  e (e, resp, isLXDError) {
+    e.lxdHost = this.address
+    e.response = resp.type
+    e.metadata = resp.metadata
 
+    if (isLXDError) {
+      e.error_code = resp.error_code
+    } else {
+      e.status_code = resp.status_code
+    }
+
+    return e
+  }
+
+  async request (method, url, apiDesc, params) {
+    const reqId = ++ReqID
+
+    const options = {} // TODO: rejectUnauthorized false and cert auth
+
+    if (method !== 'GET') {
+      options.method = method
+      options.body = params
+    }
+
+    url = this.address + url.replace(/\/$/, '')
+
+    let resp = await fetch(url, options)
+    resp = await resp.json() // TODO: raw value calls
+
+    if (resp.type !== 'error' && apiDesc.operation.indexOf(resp.type) === -1) {
+      throw this.e(new Error('Spec violation: Should only return ' + apiDesc.operation), resp)
+    }
+
+    switch (resp.type) {
+      case 'error': {
+        throw this.e(new Error('LXD Error: ' + resp.error), resp, true)
+      }
+      case 'sync': {
+        return resp.metadata
+      }
+      // TODO: async
+      default: {
+        throw new TypeError('Unknown response type ' + resp.type)
+      }
+    }
   }
 }
 

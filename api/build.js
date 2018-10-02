@@ -231,7 +231,7 @@ function iter (curTree, first) {
 }
 
 // beautify & minify code
-let code = require('terser').minify(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree)), {output: {beautify: true}})
+let code = require('terser').minify(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree, true)), {output: {beautify: true}})
 if (code.error) {
   throw code.error
 }
