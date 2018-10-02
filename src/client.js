@@ -14,6 +14,7 @@ class AsyncOperation {
     this.operation = client.api.operations(data.id)
     this.id = data.id
     this.opUrl = opUrl
+    this.isAsync = true
 
     this.handleResp(data)
     this.verifySuccess()
