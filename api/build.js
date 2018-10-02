@@ -112,6 +112,7 @@ let tree = {
 }
 
 delete restApi['/']
+restApi['/1.0/info'] = restApi['/1.0/'] // map this to .info()
 delete restApi['/1.0/']
 
 // convert into method-tree
