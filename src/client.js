@@ -161,6 +161,8 @@ class Client {
       url = '/1.0/'
     }
 
+    url = url.replace(/\/$/, '')
+
     if (queryParams) {
       url += '?' + String(new URLSearchParams(queryParams))
     }
@@ -169,7 +171,7 @@ class Client {
 
     let req = {method, url, params}
 
-    url = this.address + url.replace(/\/$/, '')
+    url = this.address + url
 
     let resp = await fetch(url, options)
     resp = await resp.json() // TODO: raw value calls

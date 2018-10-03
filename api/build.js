@@ -173,7 +173,7 @@ Object.keys(restApi).sort((a, b) => a.length - b.length)/* sort by length so low
 
 const dset = require('dset')
 
-function iter (curTree, first) {
+function iter (curTree, l) {
   let outD = {}
   let outF = {}
 
@@ -192,7 +192,7 @@ function iter (curTree, first) {
 
     if (methodData.param) {
       dset(outF, msCode, `(...params) => {
-        ${first ? `let url = "/1.0/${ms.join('/')}/"` : `url += "${ms.join('/')}/"`}
+        ${!l ? `let u0 = "/1.0/${ms.join('/')}/"` : `let u${l} = u${l - 1} + "${ms.join('/')}/"`}
         let pc = ${methodData.last.length}
         let p = ${JSON.stringify(methodData.last)}
         if (params.length < pc) {
@@ -201,15 +201,15 @@ function iter (curTree, first) {
         if (params.length > pc) {
           throw new Error('Too many parameters')
         }
-        url += params.join('/') + '/'
+        u${l} += params.join('/') + '/'
 
-        return ${iter(methodData)}
+        return ${iter(methodData, l + 1)}
       }`)
     } else {
       dset(outD, msCode, `(params, queryParams, headers) => {
-        ${first ? `let url = "/1.0/${ms.join('/')}/"` : (ms.length ? `url += "${ms.join('/')}/"` : '')}
+        ${!l ? `let u0 = "/1.0/${ms.join('/')}/"` : (ms.length ? `let u${l} = u${l - 1} + "${ms.join('/')}/"` : `let u${l} = u${l - 1}`)}
 
-        return client.request("${httpVerb}", url, ${JSON.stringify(methodData.me)}, params, queryParams, headers)
+        return client.request("${httpVerb}", u${l}, ${JSON.stringify(methodData.me)}, params, queryParams, headers)
       }`)
     }
   }
@@ -232,7 +232,7 @@ function iter (curTree, first) {
 }
 
 // beautify & minify code
-let code = require('terser').minify(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree, true)), {output: {beautify: true}})
+let code = require('terser').minify(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree, 0)), {output: {beautify: true}})
 if (code.error) {
   throw code.error
 }
