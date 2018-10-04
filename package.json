@@ -21,10 +21,10 @@
   "dependencies": {
     "debug": "^4.0.1",
     "dset": "^2.0.1",
-    "node-fetch": "github:mkg20001/node-fetch#feat/unix-socket-support"
+    "node-fetch": "github:mkg20001/node-fetch#patches"
   },
   "devDependencies": {
-    "terser": "^3.9.2"
+    "terser": "^3.9.3"
   },
   "repository": {
     "type": "git",

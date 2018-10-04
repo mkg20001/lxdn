@@ -150,7 +150,11 @@ class Client {
       headers = {}
     }
 
-    const options = {headers} // TODO: rejectUnauthorized false and cert auth
+    const options = {headers, rejectUnauthorized: false}
+    if (this.auth) {
+      options.cert = this.auth.cert
+      options.key = this.auth.key
+    }
 
     if (method !== 'GET') {
       options.method = method
