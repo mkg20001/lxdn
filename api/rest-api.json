@@ -5,7 +5,9 @@
       "authentication": [
         "guest"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of supported API endpoint URLs"
     }
   },
@@ -17,7 +19,9 @@
         "untrusted",
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "Dict representing server state"
     },
     "PUT": {
@@ -26,7 +30,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "PATCH": {
@@ -36,7 +42,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -46,7 +54,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of URLs for trusted certificates"
     },
     "POST": {
@@ -55,7 +65,9 @@
         "trusted",
         "untrusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -65,7 +77,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing a trusted certificate"
     },
     "PUT": {
@@ -75,7 +89,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "PATCH": {
@@ -85,7 +101,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "DELETE": {
@@ -93,7 +111,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -103,7 +123,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of URLs for containers this server publishes"
     },
     "POST": {
@@ -112,7 +134,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     }
   },
@@ -122,7 +146,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict of the container configuration and current state."
     },
     "PUT": {
@@ -131,7 +157,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     },
     "PATCH": {
@@ -141,7 +169,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "POST": {
@@ -150,7 +180,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     },
     "DELETE": {
@@ -158,7 +190,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     }
   },
@@ -168,14 +202,17 @@
       "authentication": [
         "trusted"
       ],
-      "return": "the contents of the console log"
+      "return": "the contents of the console log",
+      "rawCall": true
     },
     "POST": {
       "description": "attach to a container's console devices",
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "standard error"
     },
     "DELETE": {
@@ -183,7 +220,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "Sync",
+      "operation": [
+        "sync"
+      ],
       "return": "empty response or standard error"
     }
   },
@@ -193,7 +232,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation + optional websocket information or standard error"
     }
   },
@@ -204,7 +245,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "if the type of the file is a directory, the return is a sync",
       "`x-lxd-uid`": "0",
       "`x-lxd-gid`": "0",
@@ -217,9 +260,10 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error",
-      "standard": "http file upload",
       "`x-lxd-uid`": "0",
       "`x-lxd-gid`": "0",
       "`x-lxd-mode`": "0700",
@@ -233,7 +277,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -243,7 +289,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of URLs for snapshots for this container"
     },
     "POST": {
@@ -251,7 +299,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     }
   },
@@ -261,7 +311,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing the snapshot"
     },
     "POST": {
@@ -269,7 +321,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     },
     "DELETE": {
@@ -277,7 +331,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     }
   },
@@ -287,7 +343,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing current state"
     },
     "PUT": {
@@ -295,7 +353,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     }
   },
@@ -305,7 +365,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "Sync",
+      "operation": [
+        "sync"
+      ],
       "return": "a list of the available log files"
     }
   },
@@ -315,14 +377,17 @@
       "authentication": [
         "trusted"
       ],
-      "return": "the contents of the log file"
+      "return": "the contents of the log file",
+      "rawCall": true
     },
     "DELETE": {
       "description": "delete a particular log file.",
       "authentication": [
         "trusted"
       ],
-      "operation": "Sync",
+      "operation": [
+        "sync"
+      ],
       "return": "empty response or standard error"
     }
   },
@@ -333,7 +398,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "Sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing container metadata"
     },
     "PUT": {
@@ -343,7 +410,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -355,7 +424,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "Sync",
+      "operation": [
+        "sync"
+      ],
       "return": "the content of the template"
     },
     "POST": {
@@ -365,9 +436,10 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "Sync",
-      "return": "standard return value or standard error",
-      "standard": "http file upload."
+      "operation": [
+        "sync"
+      ],
+      "return": "standard return value or standard error"
     },
     "PUT": {
       "comment": "`?path=<template>`",
@@ -376,9 +448,10 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "Sync",
-      "return": "standard return value or standard error",
-      "standard": "http file upload."
+      "operation": [
+        "sync"
+      ],
+      "return": "standard return value or standard error"
     },
     "DELETE": {
       "comment": "`?path=<template>`",
@@ -387,7 +460,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "Sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -398,7 +473,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "a list of backups for the container"
     },
     "POST": {
@@ -407,7 +484,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "returns": "background operation or standard error"
     }
   },
@@ -418,7 +497,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "returns": "dict of the backup"
     },
     "DELETE": {
@@ -427,7 +508,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     },
     "POST": {
@@ -436,7 +519,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     }
   },
@@ -447,7 +532,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict containing the backup tarball"
     }
   },
@@ -458,11 +545,11 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "(notification about creation, updates and termination of all background operations)",
+      "operation": [
+        "sync"
+      ],
       "return": "none (never ending flow of events)",
-      "type": "comma separated list of notifications to subscribe to (defaults to all)",
-      "logging": "(every log entry from the server)",
-      "lifecycle": "(container lifecycle events)"
+      "type": "comma separated list of notifications to subscribe to (defaults to all)"
     }
   },
   "/1.0/images": {
@@ -472,7 +559,9 @@
         "guest",
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of URLs for images this server publishes"
     },
     "POST": {
@@ -480,11 +569,10 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error",
-      "standard": "http file upload",
-      "source": "container dictionary (makes an image out of a local container)",
-      "remote": "image URL dictionary (downloads a remote image)",
       "`x-lxd-fingerprint`": "SHA-256 (if set, uploaded file must match)",
       "`x-lxd-filename`": "FILENAME (used for export)",
       "`x-lxd-public`": "true/false (defaults to false)",
@@ -499,7 +587,9 @@
         "guest",
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing an image properties"
     },
     "PUT": {
@@ -508,7 +598,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "PATCH": {
@@ -518,7 +610,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "DELETE": {
@@ -526,7 +620,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operaton or standard error"
     }
   },
@@ -538,7 +634,9 @@
         "guest",
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "Raw file or standard error"
     }
   },
@@ -548,7 +646,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "Background operation or standard error"
     }
   },
@@ -559,7 +659,9 @@
         "guest",
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     }
   },
@@ -570,7 +672,9 @@
         "guest",
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of URLs for aliases this server knows about"
     },
     "POST": {
@@ -578,7 +682,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -589,7 +695,9 @@
         "guest",
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing an alias description and target"
     },
     "PUT": {
@@ -598,7 +706,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "PATCH": {
@@ -608,7 +718,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "POST": {
@@ -616,7 +728,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "DELETE": {
@@ -624,7 +738,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -634,7 +750,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of URLs for networks that are current defined on the host"
     },
     "POST": {
@@ -643,7 +761,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -653,7 +773,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing a network"
     },
     "PUT": {
@@ -663,7 +785,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "PATCH": {
@@ -673,7 +797,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "POST": {
@@ -682,7 +808,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "DELETE": {
@@ -691,7 +819,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -701,7 +831,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing a network's state"
     }
   },
@@ -711,7 +843,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of URLs for operations that are currently going on/queued"
     }
   },
@@ -721,7 +855,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing a background operation"
     },
     "DELETE": {
@@ -729,7 +865,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -740,7 +878,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict of the operation after it's reached its final state"
     }
   },
@@ -752,7 +892,9 @@
         "guest",
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "websocket stream or standard error"
     }
   },
@@ -762,7 +904,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of URLs to defined profiles"
     },
     "POST": {
@@ -770,7 +914,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -780,7 +926,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing the profile content"
     },
     "PUT": {
@@ -789,7 +937,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "PATCH": {
@@ -799,7 +949,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "POST": {
@@ -807,7 +959,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "DELETE": {
@@ -815,7 +969,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -826,7 +982,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of storage pools that are currently defined on the host"
     },
     "POST": {
@@ -835,7 +993,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -846,7 +1006,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing a storage pool"
     },
     "PUT": {
@@ -856,7 +1018,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "PATCH": {
@@ -865,7 +1029,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "DELETE": {
@@ -874,7 +1040,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -885,7 +1053,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing the storage pool resources"
     }
   },
@@ -896,7 +1066,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of storage volumes that currently exist on a given storage pool"
     },
     "POST": {
@@ -905,8 +1077,12 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync or async (when copying an existing volume)",
-      "return": "standard return value or standard error"
+      "operation": [
+        "sync",
+        "async"
+      ],
+      "return": "standard return value or standard error",
+      "operation_comment": "when copying an existing volume"
     }
   },
   "/1.0/storage-pools/<pool>/volumes/<type>": {
@@ -916,8 +1092,12 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync or async (when copying an existing volume)",
-      "return": "standard return value or standard error"
+      "operation": [
+        "sync",
+        "async"
+      ],
+      "return": "standard return value or standard error",
+      "operation_comment": "when copying an existing volume"
     }
   },
   "/1.0/storage-pools/<pool>/volumes/<type>/<name>": {
@@ -927,8 +1107,12 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync or async (when moving to a different pool)",
-      "return": "standard return value or standard error"
+      "operation": [
+        "sync",
+        "async"
+      ],
+      "return": "standard return value or standard error",
+      "operation_comment": "when moving to a different pool"
     },
     "GET": {
       "description": "information about a storage volume of a given type on a storage pool",
@@ -936,7 +1120,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing a storage volume"
     },
     "PUT": {
@@ -946,7 +1132,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "PATCH": {
@@ -956,7 +1144,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     },
     "DELETE": {
@@ -965,7 +1155,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "standard return value or standard error"
     }
   },
@@ -975,7 +1167,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of URLs for snapshots for this volume"
     },
     "POST": {
@@ -983,7 +1177,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     }
   },
@@ -993,7 +1189,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing the snapshot"
     },
     "PUT": {
@@ -1001,7 +1199,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing the volume snapshot"
     },
     "POST": {
@@ -1009,7 +1209,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     },
     "DELETE": {
@@ -1017,7 +1219,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "async",
+      "operation": [
+        "async"
+      ],
       "return": "background operation or standard error"
     }
   },
@@ -1030,7 +1234,9 @@
         "untrusted",
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing the system resources"
     }
   },
@@ -1042,7 +1248,9 @@
         "trusted",
         "untrusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "dict representing a cluster"
     },
     "PUT": {
@@ -1051,7 +1259,10 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync or async",
+      "operation": [
+        "sync",
+        "async"
+      ],
       "return": "various payloads depending on the input"
     }
   },
@@ -1062,7 +1273,9 @@
       "authentication": [
         "trusted"
       ],
-      "operation": "sync",
+      "operation": [
+        "sync"
+      ],
       "return": "list of cluster members"
     }
   }

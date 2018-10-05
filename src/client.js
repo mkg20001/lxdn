@@ -178,7 +178,23 @@ class Client {
     url = this.address + url
 
     let resp = await fetch(url, options)
-    resp = await resp.json() // TODO: raw value calls
+
+    if (apiDesc.rawCall) { // raw calls
+      if (resp.status >= 400) {
+        resp = {
+          type: 'error',
+          error: resp.statusText,
+          error_code: resp.status,
+          metadata: {}
+        }
+        /* continue with json part, handle as error */
+      } else {
+        resp = await resp.buffer()
+        return resp
+      }
+    } else {
+      resp = await resp.json() // parse as json
+    }
 
     log('[res#%i]: got %s', reqId, resp.type)
 

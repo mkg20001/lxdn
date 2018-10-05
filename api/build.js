@@ -37,7 +37,7 @@ data.forEach(line => {
       }
       break
     }
-    case line.startsWith(' * '): { // * Description: ...
+    case line.startsWith(' * ') && line.indexOf(':') !== -1: { // * Description: ...
       let name = s[2].toLowerCase().replace(':', '')
       subMe.meta[name] = s.slice(3).join(' ')
       break
@@ -68,6 +68,12 @@ parsed.forEach(prop => {
     me.meta.authentication = me.meta.authentication.replace(' or ', ', ').split(', ')
     if (me.meta.operation === 'N/A') {
       delete me.meta.operation
+      me.meta.rawCall = true
+    } else {
+      if (me.meta.operation.indexOf('(') !== -1) {
+        me.meta.operation_comment = me.meta.operation.replace(/.+\(/gmi, '').replace(/[()]/gmi, '')
+      }
+      me.meta.operation = me.meta.operation.replace(/ *\(.+/gmi, '').replace(' or ', ', ').toLowerCase().split(', ')
     }
 
     /*
