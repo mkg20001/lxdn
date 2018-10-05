@@ -106,8 +106,10 @@ class Client {
 
   e (e, req, resp, isLXDError) {
     e.lxdHost = this.address
-    e.response = resp.type
-    e.metadata = resp.metadata
+    if (resp) {
+      e.response = resp.type
+      e.metadata = resp.metadata
+    }
     e.req = req
 
     e.stack += `\n --- LXD ---\n ${req.method} ${req.url} \n ${JSON.stringify(req.params)} \n Response: ${resp.type} \n Metadata: ${JSON.stringify(resp.metadata)} `
@@ -115,7 +117,7 @@ class Client {
     if (isLXDError) {
       e.error_code = resp.error_code
       e.stack += `\n Error: ${resp.error_code} ${resp.error} `
-    } else {
+    } else if (resp) {
       e.status_code = resp.status_code
       e.status += `\n Status: ${resp.status_code} ${resp.status} `
     }
@@ -174,6 +176,10 @@ class Client {
     log('[req#%i]: %s %s %o', reqId, method, url, params)
 
     let req = {method, url, params}
+
+    if (apiDesc.extension && this.info.api_extensions.indexOf(apiDesc.extension) === -1) {
+      throw this.e(new Error('API call ' + url + ' requires extension ' + apiDesc.extension + ' which the server doesn\'t support!'), req)
+    }
 
     url = this.address + url
 

@@ -65,7 +65,9 @@ parsed.forEach(prop => {
     if (me.comment) {
       meOut.comment = me.comment
     }
+
     me.meta.authentication = me.meta.authentication.replace(' or ', ', ').split(', ')
+
     if (me.meta.operation === 'N/A') {
       delete me.meta.operation
       me.meta.rawCall = true
@@ -76,16 +78,10 @@ parsed.forEach(prop => {
       me.meta.operation = me.meta.operation.replace(/ *\(.+/gmi, '').replace(' or ', ', ').toLowerCase().split(', ')
     }
 
-    /*
-
-    TO DO
-      - more data extraction
-        - meta.introduced: with API extension `$EXTENSION`
-          - could be mapped to ".extension"
-        - operation: OP or OP2 (COMMENT)
-          - make operation array, add operation_comment or operation_desc
-
-    */
+    if (me.meta.introduced) {
+      me.meta.extension = me.meta.introduced.match(/api extension `([a-z_]+)`/mi)[1]
+      delete me.meta.introduced
+    }
 
     for (const k in me.meta) { // eslint-disable-line guard-for-in
       meOut[k] = me.meta[k]
