@@ -17,7 +17,9 @@ Every final request function (`.get()`, `.post()`, etc.) allows three arguments:
   - `query`: Query parameters to add
   - `headers`: Additional headers
 
-Some API calls might return async operations. For those check the `.isAsync` flag if `async` is among the types listed in `operation`. These calls return an `AsyncOperation` object
+Some API calls might return buffers, these usually have set `N/A` as their return type.
+
+Some other API calls might return async operations. For those check the `.isAsync` flag if `async` is among the types listed in `operation`. These calls return an `AsyncOperation` object
 
 `AsyncOperation`:
   - `async wait(timeout?)`: Wait, with possible timeout value. Will throw if operation errors.
