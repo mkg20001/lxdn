@@ -975,6 +975,89 @@
       "return": "standard return value or standard error"
     }
   },
+  "/1.0/projects": {
+    "GET": {
+      "description": "List of projects",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": [
+        "sync"
+      ],
+      "return": "list of URLs to defined projects",
+      "extension": "projects"
+    },
+    "POST": {
+      "description": "define a new project",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": [
+        "sync"
+      ],
+      "return": "standard return value or standard error",
+      "extension": "projects"
+    }
+  },
+  "/1.0/projects/<name>": {
+    "GET": {
+      "description": "project configuration",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": [
+        "sync"
+      ],
+      "return": "dict representing the project content",
+      "extension": "projects"
+    },
+    "PUT": {
+      "comment": "ETag supported",
+      "description": "replace the project information",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": [
+        "sync"
+      ],
+      "return": "standard return value or standard error",
+      "extension": "projects"
+    },
+    "PATCH": {
+      "comment": "ETag supported",
+      "description": "update the project information",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": [
+        "sync"
+      ],
+      "return": "standard return value or standard error",
+      "extension": "projects"
+    },
+    "POST": {
+      "description": "rename a project",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": [
+        "async"
+      ],
+      "return": "background operation or standard error",
+      "extension": "projects"
+    },
+    "DELETE": {
+      "description": "remove a project",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": [
+        "sync"
+      ],
+      "return": "standard return value or standard error",
+      "extension": "projects"
+    }
+  },
   "/1.0/storage-pools": {
     "GET": {
       "description": "list of storage pools",

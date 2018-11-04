@@ -1,4 +1,5 @@
-# Introduction
+# REST API
+## Introduction
 All the communications between LXD and its clients happen using a
 RESTful API over http which is then encapsulated over either SSL for
 remote operations or a unix socket for local operations.
@@ -12,7 +13,7 @@ Not all of the REST interface requires authentication:
 
 Unauthenticated endpoints are clearly identified as such below.
 
-# API versioning
+## API versioning
 The list of supported major API versions can be retrieved using `GET /`.
 
 The reason for a major API bump is if the API breaks backward compatibility.
@@ -21,14 +22,14 @@ Feature additions done without breaking backward compatibility only
 result in addition to `api_extensions` which can be used by the client
 to check if a given feature is supported by the server.
 
-# Return values
+## Return values
 There are three standard return types:
 
  * Standard return value
  * Background operation
  * Error
 
-### Standard return value
+#### Standard return value
 For a standard synchronous operation, the following dict is returned:
 
     {
@@ -40,7 +41,7 @@ For a standard synchronous operation, the following dict is returned:
 
 HTTP code must be 200.
 
-### Background operation
+#### Background operation
 When a request results in a background operation, the HTTP code is set to 202 (Accepted)
 and the Location HTTP header is set to the operation URL.
 
@@ -82,7 +83,7 @@ The body is mostly provided as a user friendly way of seeing what's
 going on without having to pull the target operation, all information in
 the body can also be retrieved from the background operation URL.
 
-### Error
+#### Error
 There are various situations in which something may immediately go
 wrong, in those cases, the following return value is used:
 
@@ -95,7 +96,7 @@ wrong, in those cases, the following return value is used:
 
 HTTP code must be one of of 400, 401, 403, 404, 409, 412 or 500.
 
-# Status codes
+## Status codes
 The LXD REST API often has to return status information, be that the
 reason for an error, the current state of an operation or the state of
 the various resources it exports.
@@ -117,7 +118,7 @@ The codes are always 3 digits, with the following ranges:
  * 400 to 599: negative action result
  * 600 to 999: future use
 
-## List of current status codes
+### List of current status codes
 
 Code  | Meaning
 :---  | :------
@@ -137,7 +138,7 @@ Code  | Meaning
 400   | Failure
 401   | Cancelled
 
-# Recursion
+## Recursion
 To optimize queries of large lists, recursion is implemented for collections.
 A `recursion` argument can be passed to a GET query against a collection.
 
@@ -148,14 +149,14 @@ they point to (typically a dict).
 Recursion is implemented by simply replacing any pointer to an job (URL)
 by the object itself.
 
-# Async operations
+## Async operations
 Any operation which may take more than a second to be done must be done
 in the background, returning a background operation ID to the client.
 
 The client will then be able to either poll for a status update or wait
 for a notification using the long-poll API.
 
-# Notifications
+## Notifications
 A websocket based API is available for notifications, different notification
 types exist to limit the traffic going to the client.
 
@@ -163,7 +164,7 @@ It's recommended that the client always subscribes to the operations
 notification type before triggering remote operations so that it doesn't
 have to then poll for their status.
 
-# PUT vs PATCH
+## PUT vs PATCH
 The LXD API supports both PUT and PATCH to modify existing objects.
 
 PUT replaces the entire object with a new definition, it's typically
@@ -178,7 +179,7 @@ specifying the property that you want to change. To unset a key, setting
 it to empty will usually do the trick, but there are cases where PATCH
 won't work and PUT needs to be used instead.
 
-# API structure
+## API structure
  * [`/`](#)
    * [`/1.0`](#10)
      * [`/1.0/certificates`](#10certificates)
@@ -215,6 +216,8 @@ won't work and PUT needs to be used instead.
          * [`/1.0/operations/<uuid>/websocket`](#10operationsuuidwebsocket)
      * [`/1.0/profiles`](#10profiles)
        * [`/1.0/profiles/<name>`](#10profilesname)
+     * [`/1.0/projects`](#10projects)
+       * [`/1.0/projects/<name>`](#10projectsname)
      * [`/1.0/storage-pools`](#10storage-pools)
        * [`/1.0/storage-pools/<name>`](#10storage-poolsname)
          * [`/1.0/storage-pools/<name>/resources`](#10storage-poolsnameresources)
@@ -228,9 +231,9 @@ won't work and PUT needs to be used instead.
        * [`/1.0/cluster/members`](#10clustermembers)
          * [`/1.0/cluster/members/<name>`](#10clustermembersname)
 
-# API details
-## `/`
-### GET
+## API details
+### `/`
+#### GET
  * Description: List of supported APIs
  * Authentication: guest
  * Operation: sync
@@ -242,8 +245,8 @@ Return value:
         "/1.0"
     ]
 
-## `/1.0/`
-### GET
+### `/1.0/`
+#### GET
  * Description: Server configuration and environment information
  * Authentication: guest, untrusted or trusted
  * Operation: sync
@@ -294,7 +297,7 @@ Return value (if guest or untrusted):
         "public": false,                        # Whether the server should be treated as a public (read-only) remote by the client
     }
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
  * Description: Replaces the server configuration or other properties
  * Authentication: trusted
  * Operation: sync
@@ -309,7 +312,7 @@ Input (replaces any existing config with the provided one):
         }
     }
 
-### PATCH (ETag supported)
+#### PATCH (ETag supported)
  * Description: Updates the server configuration or other properties
  * Introduced: with API extension `patch`
  * Authentication: trusted
@@ -324,8 +327,8 @@ Input (updates only the listed keys, rest remains intact):
         }
     }
 
-## `/1.0/certificates`
-### GET
+### `/1.0/certificates`
+#### GET
  * Description: list of trusted certificates
  * Authentication: trusted
  * Operation: sync
@@ -337,7 +340,7 @@ Return:
         "/1.0/certificates/3ee64be3c3c7d617a7470e14f2d847081ad467c8c26e1caad841c8f67f7c7b09"
     ]
 
-### POST
+#### POST
  * Description: add a new trusted certificate
  * Authentication: trusted or untrusted
  * Operation: sync
@@ -352,8 +355,8 @@ Input:
         "password": "server-trust-password"     # The trust password for that server (only required if untrusted)
     }
 
-## `/1.0/certificates/<fingerprint>`
-### GET
+### `/1.0/certificates/<fingerprint>`
+#### GET
  * Description: trusted certificate information
  * Authentication: trusted
  * Operation: sync
@@ -368,7 +371,7 @@ Output:
         "fingerprint": "SHA256 Hash of the raw certificate"
     }
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
  * Description: Replaces the certificate properties
  * Introduced: with API extension `certificate_update`
  * Authentication: trusted
@@ -382,7 +385,7 @@ Input:
         "name": "bar"
     }
 
-### PATCH (ETag supported)
+#### PATCH (ETag supported)
  * Description: Updates the certificate properties
  * Introduced: with API extension `certificate_update`
  * Authentication: trusted
@@ -396,7 +399,7 @@ Input:
     }
 
 
-### DELETE
+#### DELETE
  * Description: Remove a trusted certificate
  * Authentication: trusted
  * Operation: sync
@@ -409,8 +412,8 @@ Input (none at present):
 
 HTTP code for this should be 202 (Accepted).
 
-## `/1.0/containers`
-### GET
+### `/1.0/containers`
+#### GET
  * Description: List of containers
  * Authentication: trusted
  * Operation: sync
@@ -423,7 +426,7 @@ Return value:
         "/1.0/containers/blah1"
     ]
 
-### POST (optional `?target=<member>`)
+#### POST (optional `?target=<member>`)
  * Description: Create a new container
  * Authentication: trusted
  * Operation: async
@@ -618,8 +621,8 @@ Input (using a backup):
 
     Raw compressed tarball as provided by a backup download.
 
-## `/1.0/containers/<name>`
-### GET
+### `/1.0/containers/<name>`
+#### GET
  * Description: Container information
  * Authentication: trusted
  * Operation: sync
@@ -669,7 +672,7 @@ Output:
         "status_code": 103
     }
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
  * Description: replaces container configuration or restore snapshot
  * Authentication: trusted
  * Operation: async
@@ -706,7 +709,7 @@ Input (restore snapshot):
         "restore": "snapshot-name"
     }
 
-### PATCH (ETag supported)
+#### PATCH (ETag supported)
  * Description: update container configuration
  * Introduced: with API extension `patch`
  * Authentication: trusted
@@ -727,7 +730,7 @@ Input:
         "ephemeral": true
     }
 
-### POST (optional `?target=<member>`)
+#### POST (optional `?target=<member>`)
  * Description: used to rename/migrate the container
  * Authentication: trusted
  * Operation: async
@@ -764,7 +767,7 @@ Output in metadata section (for migration):
 
 These are the secrets that should be passed to the create call.
 
-### DELETE
+#### DELETE
  * Description: remove the container
  * Authentication: trusted
  * Operation: async
@@ -777,14 +780,14 @@ Input (none at present):
 
 HTTP code for this should be 202 (Accepted).
 
-## `/1.0/containers/<name>/console`
-### GET
+### `/1.0/containers/<name>/console`
+#### GET
 * Description: returns the contents of the container's console  log
 * Authentication: trusted
 * Operation: N/A
 * Return: the contents of the console log
 
-### POST
+#### POST
  * Description: attach to a container's console devices
  * Authentication: trusted
  * Operation: async
@@ -810,14 +813,14 @@ Control (window size change):
         }
     }
 
-### DELETE
+#### DELETE
 * Description: empty the container's console log
 * Authentication: trusted
 * Operation: Sync
 * Return: empty response or standard error
 
-## `/1.0/containers/<name>/exec`
-### POST
+### `/1.0/containers/<name>/exec`
+#### POST
  * Description: run a remote command
  * Authentication: trusted
  * Operation: async
@@ -911,8 +914,8 @@ operation's metadata:
         "return": 0
     }
 
-## `/1.0/containers/<name>/files`
-### GET (`?path=/path/inside/the/container`)
+### `/1.0/containers/<name>/files`
+#### GET (`?path=/path/inside/the/container`)
  * Description: download a file or directory listing from the container
  * Authentication: trusted
  * Operation: sync
@@ -930,7 +933,7 @@ The following headers will be set (on top of standard size and mimetype headers)
 This is designed to be easily usable from the command line or even a web
 browser.
 
-### POST (`?path=/path/inside/the/container`)
+#### POST (`?path=/path/inside/the/container`)
  * Description: upload a file to the container
  * Authentication: trusted
  * Operation: sync
@@ -950,7 +953,7 @@ The following headers may be set by the client:
 This is designed to be easily usable from the command line or even a web
 browser.
 
-### DELETE (`?path=/path/inside/the/container`)
+#### DELETE (`?path=/path/inside/the/container`)
  * Description: delete a file in the container
  * Introduced: with API extension `file_delete`
  * Authentication: trusted
@@ -962,8 +965,8 @@ Input (none at present):
     {
     }
 
-## `/1.0/containers/<name>/snapshots`
-### GET
+### `/1.0/containers/<name>/snapshots`
+#### GET
  * Description: List of snapshots
  * Authentication: trusted
  * Operation: sync
@@ -975,7 +978,7 @@ Return value:
         "/1.0/containers/blah/snapshots/snap0"
     ]
 
-### POST
+#### POST
  * Description: create a new snapshot
  * Authentication: trusted
  * Operation: async
@@ -988,8 +991,8 @@ Input:
         "stateful": true                # Whether to include state too
     }
 
-## `/1.0/containers/<name>/snapshots/<name>`
-### GET
+### `/1.0/containers/<name>/snapshots/<name>`
+#### GET
  * Description: Snapshot information
  * Authentication: trusted
  * Operation: sync
@@ -1044,7 +1047,7 @@ Return:
         "stateful": false
     }
 
-### POST
+#### POST
  * Description: used to rename/migrate the snapshot
  * Authentication: trusted
  * Operation: async
@@ -1073,7 +1076,7 @@ Return (with migration=true):
 
 Renaming to an existing name must return the 409 (Conflict) HTTP code.
 
-### DELETE
+#### DELETE
  * Description: remove the snapshot
  * Authentication: trusted
  * Operation: async
@@ -1086,8 +1089,8 @@ Input (none at present):
 
 HTTP code for this should be 202 (Accepted).
 
-## `/1.0/containers/<name>/state`
-### GET
+### `/1.0/containers/<name>/state`
+#### GET
  * Description: current state
  * Authentication: trusted
  * Operation: sync
@@ -1237,7 +1240,7 @@ Output:
         }
     }
 
-### PUT
+#### PUT
  * Description: change the container state
  * Authentication: trusted
  * Operation: async
@@ -1252,8 +1255,8 @@ Input:
         "stateful": true        # Whether to store or restore runtime state before stopping or startiong (only valid for stop and start, defaults to false)
     }
 
-## `/1.0/containers/<name>/logs`
-### GET
+### `/1.0/containers/<name>/logs`
+#### GET
 * Description: Returns a list of the log files available for this container.
   Note that this works on containers that have been deleted (or were never
   created) to enable people to get logs for failed creations.
@@ -1269,21 +1272,21 @@ Return:
         "/1.0/containers/blah/logs/lxc.log"
     ]
 
-## `/1.0/containers/<name>/logs/<logfile>`
-### GET
+### `/1.0/containers/<name>/logs/<logfile>`
+#### GET
 * Description: returns the contents of a particular log file.
 * Authentication: trusted
 * Operation: N/A
 * Return: the contents of the log file
 
-### DELETE
+#### DELETE
 * Description: delete a particular log file.
 * Authentication: trusted
 * Operation: Sync
 * Return: empty response or standard error
 
-## `/1.0/containers/<name>/metadata`
-### GET
+### `/1.0/containers/<name>/metadata`
+#### GET
 * Description: Container metadata
 * Introduced: with API extension `container_edit_metadata`
 * Authentication: trusted
@@ -1314,7 +1317,7 @@ Return:
         }
     }
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
 * Description: Replaces container metadata
 * Introduced: with API extension `container_edit_metadata`
 * Authentication: trusted
@@ -1345,8 +1348,8 @@ Input:
         }
     }
 
-## `/1.0/containers/<name>/metadata/templates`
-### GET
+### `/1.0/containers/<name>/metadata/templates`
+#### GET
 * Description: List container templates
 * Introduced: with API extension `container_edit_metadata`
 * Authentication: trusted
@@ -1360,14 +1363,14 @@ Return:
         "hosts.tpl"
     ]
 
-### GET (`?path=<template>`)
+#### GET (`?path=<template>`)
 * Description: Content of a container template
 * Introduced: with API extension `container_edit_metadata`
 * Authentication: trusted
 * Operation: Sync
 * Return: the content of the template
 
-### POST (`?path=<template>`)
+#### POST (`?path=<template>`)
 * Description: Add a continer template
 * Introduced: with API extension `container_edit_metadata`
 * Authentication: trusted
@@ -1378,7 +1381,7 @@ Input:
 
  * Standard http file upload.
 
-### PUT (`?path=<template>`)
+#### PUT (`?path=<template>`)
 * Description: Replace content of a template
 * Introduced: with API extension `container_edit_metadata`
 * Authentication: trusted
@@ -1389,15 +1392,15 @@ Input:
 
  * Standard http file upload.
 
-### DELETE (`?path=<template>`)
+#### DELETE (`?path=<template>`)
 * Description: Delete a container template
 * Introduced: with API extension `container_edit_metadata`
 * Authentication: trusted
 * Operation: Sync
 * Return: standard return value or standard error
 
-## `/1.0/containers/<name>/backups`
-### GET
+### `/1.0/containers/<name>/backups`
+#### GET
 * Description: List of backups for the container
 * Introduced: with API extension `container_backup`
 * Authentication: trusted
@@ -1411,7 +1414,7 @@ Return value:
         "/1.0/containers/c1/backups/c1/backup1",
     ]
 
-### POST
+#### POST
 * Description: Create a new backup
 * Introduced: with API extension `container_backup`
 * Authentication: trusted
@@ -1427,8 +1430,8 @@ Input:
         "optimized_storage": true  # if True, btrfs send or zfs send is used for container and snapshots
     }
 
-## `/1.0/containers/<name>/backups/<name>`
-### GET
+### `/1.0/containers/<name>/backups/<name>`
+#### GET
 * Description: Backup information
 * Introduced: with API extension `container_backup`
 * Authentication: trusted
@@ -1445,14 +1448,14 @@ Output:
         "optimized_storage": false
     }
 
-### DELETE
+#### DELETE
  * Description: remove the backup
  * Introduced: with API extension `container_backup`
  * Authentication: trusted
  * Operation: async
  * Return: background operation or standard error
 
-### POST
+#### POST
  * Description: used to rename the backup
  * Introduced: with API extension `container_backup`
  * Authentication: trusted
@@ -1465,8 +1468,8 @@ Input:
         "name": "new-name"
     }
 
-## `/1.0/containers/<name>/backups/<name>/export`
-### GET
+### `/1.0/containers/<name>/backups/<name>/export`
+#### GET
 * Description: fetch the backup tarball
 * Introduced: with API extension `container_backup`
 * Authentication: trusted
@@ -1479,12 +1482,12 @@ Output:
         "data": <byte-stream>
     }
 
-## `/1.0/events`
+### `/1.0/events`
 This URL isn't a real REST API endpoint, instead doing a GET query on it
 will upgrade the connection to a websocket on which notifications will
 be sent.
 
-### GET (`?type=operation,logging`)
+#### GET (`?type=operation,logging`)
  * Description: websocket upgrade
  * Authentication: trusted
  * Operation: sync
@@ -1522,8 +1525,8 @@ This never returns. Each notification is sent as a separate JSON dict:
         }
     }
 
-## `/1.0/images`
-### GET
+### `/1.0/images`
+#### GET
  * Description: list of images (public or private)
  * Authentication: guest or trusted
  * Operation: sync
@@ -1538,7 +1541,7 @@ Return:
         "/1.0/images/c9b6e738fae75286d52f497415463a8ecc61bbcb046536f220d797b0e500a41f"
     ]
 
-### POST
+#### POST
  * Description: create and publish a new image
  * Authentication: trusted
  * Operation: async
@@ -1624,8 +1627,8 @@ After the input is received by LXD, a background operation is started
 which will add the image to the store and possibly do some backend
 filesystem-specific optimizations.
 
-## `/1.0/images/<fingerprint>`
-### GET (optional `?secret=SECRET`)
+### `/1.0/images/<fingerprint>`
+#### GET (optional `?secret=SECRET`)
  * Description: Image description and metadata
  * Authentication: guest or trusted
  * Operation: sync
@@ -1665,7 +1668,7 @@ Output:
         "uploaded_at": "2016-02-16T00:44:47Z"
     }
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
  * Description: Replaces the image properties, update information and visibility
  * Authentication: trusted
  * Operation: sync
@@ -1684,7 +1687,7 @@ Input:
         "public": true,
     }
 
-### PATCH (ETag supported)
+#### PATCH (ETag supported)
  * Description: Updates the image properties, update information and visibility
  * Introduced: with API extension `patch`
  * Authentication: trusted
@@ -1701,7 +1704,7 @@ Input:
         "public": true,
     }
 
-### DELETE
+#### DELETE
  * Description: Remove an image
  * Authentication: trusted
  * Operation: async
@@ -1714,8 +1717,8 @@ Input (none at present):
 
 HTTP code for this should be 202 (Accepted).
 
-## `/1.0/images/<fingerprint>/export`
-### GET (optional `?secret=SECRET`)
+### `/1.0/images/<fingerprint>/export`
+#### GET (optional `?secret=SECRET`)
  * Description: Download the image tarball
  * Authentication: guest or trusted
  * Operation: sync
@@ -1729,8 +1732,8 @@ client will `POST` to `/1.0/images/<fingerprint>/export` to get a secret
 token which it'll then pass to the target LXD. That target LXD will then
 GET the image as a guest, passing the secret token.
 
-## `/1.0/images/<fingerprint>/refresh`
-### POST
+### `/1.0/images/<fingerprint>/refresh`
+#### POST
  * Description: Refresh an image from its origin
  * Authentication: trusted
  * Operation: async
@@ -1738,8 +1741,8 @@ GET the image as a guest, passing the secret token.
 
 This creates an operation to refresh the specified image from its origin.
 
-## `/1.0/images/<fingerprint>/secret`
-### POST
+### `/1.0/images/<fingerprint>/secret`
+#### POST
  * Description: Generate a random token and tell LXD to expect it be used by a guest
  * Authentication: guest or trusted
  * Operation: async
@@ -1763,8 +1766,8 @@ The secret is automatically invalidated 5s after an image URL using it
 has been accessed. This allows to both retried the image information and
 then hit /export with the same secret.
 
-## `/1.0/images/aliases`
-### GET
+### `/1.0/images/aliases`
+#### GET
  * Description: list of aliases (public or private based on image visibility)
  * Authentication: guest or trusted
  * Operation: sync
@@ -1778,7 +1781,7 @@ Return:
         "/1.0/images/aliases/xenial"
     ]
 
-### POST
+#### POST
  * Description: create a new alias
  * Authentication: trusted
  * Operation: sync
@@ -1792,8 +1795,8 @@ Input:
         "name": "alias-name"
     }
 
-## `/1.0/images/aliases/<name>`
-### GET
+### `/1.0/images/aliases/<name>`
+#### GET
  * Description: Alias description and target
  * Authentication: guest or trusted
  * Operation: sync
@@ -1807,7 +1810,7 @@ Output:
         "target": "c9b6e738fae75286d52f497415463a8ecc61bbcb046536f220d797b0e500a41f"
     }
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
  * Description: Replaces the alias target or description
  * Authentication: trusted
  * Operation: sync
@@ -1820,7 +1823,7 @@ Input:
         "target": "54c8caac1f61901ed86c68f24af5f5d3672bdc62c71d04f06df3a59e95684473"
     }
 
-### PATCH (ETag supported)
+#### PATCH (ETag supported)
  * Description: Updates the alias target or description
  * Introduced: with API extension `patch`
  * Authentication: trusted
@@ -1833,7 +1836,7 @@ Input:
         "description": "New description"
     }
 
-### POST
+#### POST
  * Description: rename an alias
  * Authentication: trusted
  * Operation: sync
@@ -1847,7 +1850,7 @@ Input:
 
 Renaming to an existing name must return the 409 (Conflict) HTTP code.
 
-### DELETE
+#### DELETE
  * Description: Remove an alias
  * Authentication: trusted
  * Operation: sync
@@ -1858,8 +1861,8 @@ Input (none at present):
     {
     }
 
-## `/1.0/networks`
-### GET
+### `/1.0/networks`
+#### GET
  * Description: list of networks
  * Authentication: trusted
  * Operation: sync
@@ -1872,7 +1875,7 @@ Return:
         "/1.0/networks/lxdbr0"
     ]
 
-### POST
+#### POST
  * Description: define a new network
  * Introduced: with API extension `network`
  * Authentication: trusted
@@ -1891,8 +1894,8 @@ Input:
         }
     }
 
-## `/1.0/networks/<name>`
-### GET
+### `/1.0/networks/<name>`
+#### GET
  * Description: information about a network
  * Authentication: trusted
  * Operation: sync
@@ -1910,7 +1913,7 @@ Return:
         ]
     }
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
  * Description: replace the network information
  * Introduced: with API extension `network`
  * Authentication: trusted
@@ -1930,7 +1933,7 @@ Input:
 Same dict as used for initial creation and coming from GET. Only the
 config is used, everything else is ignored.
 
-### PATCH (ETag supported)
+#### PATCH (ETag supported)
  * Description: update the network information
  * Introduced: with API extension `network`
  * Authentication: trusted
@@ -1945,7 +1948,7 @@ Input:
         }
     }
 
-### POST
+#### POST
  * Description: rename a network
  * Introduced: with API extension `network`
  * Authentication: trusted
@@ -1963,7 +1966,7 @@ the renamed resource.
 
 Renaming to an existing name must return the 409 (Conflict) HTTP code.
 
-### DELETE
+#### DELETE
  * Description: remove a network
  * Introduced: with API extension `network`
  * Authentication: trusted
@@ -1977,8 +1980,8 @@ Input (none at present):
 
 HTTP code for this should be 202 (Accepted).
 
-## `/1.0/networks/<name>/state`
-### GET
+### `/1.0/networks/<name>/state`
+#### GET
  * Description: network state
  * Authentication: trusted
  * Operation: sync
@@ -2019,8 +2022,8 @@ Return:
         "type": "broadcast"
     }
 
-## `/1.0/operations`
-### GET
+### `/1.0/operations`
+#### GET
  * Description: list of operations
  * Authentication: trusted
  * Operation: sync
@@ -2033,8 +2036,8 @@ Return:
         "/1.0/operations/092a8755-fd90-4ce4-bf91-9f87d03fd5bc"
     ]
 
-## `/1.0/operations/<uuid>`
-### GET
+### `/1.0/operations/<uuid>`
+#### GET
  * Description: background operation
  * Authentication: trusted
  * Operation: sync
@@ -2061,7 +2064,7 @@ Return:
         "err": ""
     }
 
-### DELETE
+#### DELETE
  * Description: cancel an operation. Calling this will change the state to "cancelling" rather than actually removing the entry.
  * Authentication: trusted
  * Operation: sync
@@ -2074,8 +2077,8 @@ Input (none at present):
 
 HTTP code for this should be 202 (Accepted).
 
-## `/1.0/operations/<uuid>/wait`
-### GET (optional `?timeout=30`)
+### `/1.0/operations/<uuid>/wait`
+#### GET (optional `?timeout=30`)
  * Description: Wait for an operation to finish
  * Authentication: trusted
  * Operation: sync
@@ -2085,8 +2088,8 @@ Input (wait indefinitely for a final state): no argument
 
 Input (similar but times out after 30s): ?timeout=30
 
-## `/1.0/operations/<uuid>/websocket`
-### GET (`?secret=SECRET`)
+### `/1.0/operations/<uuid>/websocket`
+#### GET (`?secret=SECRET`)
  * Description: This connection is upgraded into a websocket connection
    speaking the protocol defined by the operation type. For example, in the
    case of an exec operation, the websocket is the bidirectional pipe for
@@ -2099,8 +2102,8 @@ Input (similar but times out after 30s): ?timeout=30
  * Operation: sync
  * Return: websocket stream or standard error
 
-## `/1.0/profiles`
-### GET
+### `/1.0/profiles`
+#### GET
  * Description: List of configuration profiles
  * Authentication: trusted
  * Operation: sync
@@ -2112,7 +2115,7 @@ Return:
         "/1.0/profiles/default"
     ]
 
-### POST
+#### POST
  * Description: define a new profile
  * Authentication: trusted
  * Operation: sync
@@ -2134,8 +2137,8 @@ Input:
         }
     }
 
-## `/1.0/profiles/<name>`
-### GET
+### `/1.0/profiles/<name>`
+#### GET
  * Description: profile configuration
  * Authentication: trusted
  * Operation: sync
@@ -2160,7 +2163,7 @@ Output:
         ]
     }
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
  * Description: replace the profile information
  * Authentication: trusted
  * Operation: sync
@@ -2184,7 +2187,7 @@ Input:
 Same dict as used for initial creation and coming from GET. The name
 property can't be changed (see POST for that).
 
-### PATCH (ETag supported)
+#### PATCH (ETag supported)
  * Description: update the profile information
  * Introduced: with API extension `patch`
  * Authentication: trusted
@@ -2206,7 +2209,7 @@ Input:
         }
     }
 
-### POST
+#### POST
  * Description: rename a profile
  * Authentication: trusted
  * Operation: sync
@@ -2225,7 +2228,7 @@ Renaming to an existing name must return the 409 (Conflict) HTTP code.
 
 Attempting to rename the `default` profile will return the 403 (Forbidden) HTTP code.
 
-### DELETE
+#### DELETE
  * Description: remove a profile
  * Authentication: trusted
  * Operation: sync
@@ -2240,8 +2243,134 @@ HTTP code for this should be 202 (Accepted).
 
 Attempting to delete the `default` profile will return the 403 (Forbidden) HTTP code.
 
-## `/1.0/storage-pools`
-### GET
+### `/1.0/projects`
+#### GET
+ * Description: List of projects
+ * Introduced: with API extension `projects`
+ * Authentication: trusted
+ * Operation: sync
+ * Return: list of URLs to defined projects
+
+Return:
+
+    [
+        "/1.0/projects/default"
+    ]
+
+#### POST
+ * Description: define a new project
+ * Introduced: with API extension `projects`
+ * Authentication: trusted
+ * Operation: sync
+ * Return: standard return value or standard error
+
+Input:
+
+    {
+        "name": "test",
+        "config": {
+            "features.images": "true",
+            "features.profiles": "true",
+        },
+        "description": "Some description string"
+    }
+
+### `/1.0/projects/<name>`
+#### GET
+ * Description: project configuration
+ * Introduced: with API extension `projects`
+ * Authentication: trusted
+ * Operation: sync
+ * Return: dict representing the project content
+
+Output:
+
+    {
+        "name": "test",
+        "config": {
+            "features.images": "true",
+            "features.profiles": "true",
+        },
+        "description": "Some description string",
+        "used_by": [
+            "/1.0/containers/blah"
+        ]
+    }
+
+#### PUT (ETag supported)
+ * Description: replace the project information
+ * Introduced: with API extension `projects`
+ * Authentication: trusted
+ * Operation: sync
+ * Return: standard return value or standard error
+
+Input:
+
+    {
+        "config": {
+            "features.images": "true",
+            "features.profiles": "true",
+        },
+        "description": "Some description string"
+    }
+
+Same dict as used for initial creation and coming from GET. The name
+property can't be changed (see POST for that).
+
+#### PATCH (ETag supported)
+ * Description: update the project information
+ * Introduced: with API extension `projects`
+ * Authentication: trusted
+ * Operation: sync
+ * Return: standard return value or standard error
+
+Input:
+
+    {
+        "config": {
+            "features.images": "true",
+        },
+        "description": "Some description string"
+    }
+
+#### POST
+ * Description: rename a project
+ * Introduced: with API extension `projects`
+ * Authentication: trusted
+ * Operation: async
+ * Return: background operation or standard error
+
+Input (rename a project):
+
+    {
+        "name": "new-name"
+    }
+
+HTTP return value must be 204 (No content) and Location must point to
+the renamed resource.
+
+Renaming to an existing name must return the 409 (Conflict) HTTP code.
+
+Attempting to rename the `default` project will return the 403 (Forbidden) HTTP code.
+
+#### DELETE
+ * Description: remove a project
+ * Introduced: with API extension `projects`
+ * Authentication: trusted
+ * Operation: sync
+ * Return: standard return value or standard error
+
+Input (none at present):
+
+    {
+    }
+
+HTTP code for this should be 202 (Accepted).
+
+Attempting to delete the `default` project will return the 403 (Forbidden) HTTP code.
+
+### `/1.0/storage-pools`
+#### GET
  * Description: list of storage pools
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2258,7 +2387,7 @@ Return:
         "/1.0/storage-pools/pool4"
     ]
 
-### POST
+#### POST
  * Description: create a new storage pool
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2275,8 +2404,8 @@ Input:
         "name": "pool1"
     }
 
-## `/1.0/storage-pools/<name>`
-### GET
+### `/1.0/storage-pools/<name>`
+#### GET
  * Description: information about a storage pool
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2327,7 +2456,7 @@ Return:
         }
     }
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
  * Description: replace the storage pool information
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2348,7 +2477,7 @@ Return:
         }
     }
 
-### PATCH
+#### PATCH
  * Description: update the storage pool configuration
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2363,7 +2492,7 @@ Input:
         }
     }
 
-### DELETE
+#### DELETE
  * Description: delete a storage pool
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2375,8 +2504,8 @@ Input (none at present):
     {
     }
 
-## `/1.0/storage-pools/<name>/resources`
-### GET
+### `/1.0/storage-pools/<name>/resources`
+#### GET
  * Description: information about the resources available to the storage pool
  * Introduced: with API extension `resources`
  * Authentication: trusted
@@ -2405,8 +2534,8 @@ Return:
     }
 
 
-## `/1.0/storage-pools/<name>/volumes`
-### GET
+### `/1.0/storage-pools/<name>/volumes`
+#### GET
  * Description: list of storage volumes
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2439,7 +2568,7 @@ Return:
         "/1.0/storage-pools/default/volumes/image/62e850a334bb9d99cac00b2e618e0291e5e7bb7db56c4246ecaf8e46fa0631a6"
     ]
 
-### POST
+#### POST
  * Description: create a new storage volume on a given storage pool
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2481,8 +2610,8 @@ Input (when migrating a volume):
         }
     }
 
-## `/1.0/storage-pools/<pool>/volumes/<type>`
-### POST
+### `/1.0/storage-pools/<pool>/volumes/<type>`
+#### POST
  * Description: create a new storage volume of a particular type on a given storage pool
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2521,8 +2650,8 @@ Input (when migrating a volume):
         }
     }
 
-## `/1.0/storage-pools/<pool>/volumes/<type>/<name>`
-### POST
+### `/1.0/storage-pools/<pool>/volumes/<type>/<name>`
+#### POST
  * Description: rename a storage volume on a given storage pool
  * Introduced: with API extension `storage_api_volume_rename`
  * Authentication: trusted
@@ -2556,7 +2685,7 @@ Output in metadata section (for migration):
 
 These are the secrets that should be passed to the create call.
 
-### GET
+#### GET
  * Description: information about a storage volume of a given type on a storage pool
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2584,7 +2713,7 @@ Return:
     }
 
 
-### PUT (ETag supported)
+#### PUT (ETag supported)
  * Description: replace the storage volume information or restore from snapshot
  * Introduced: with API extension `storage`, `storage_api_volume_snapshots`
  * Authentication: trusted
@@ -2610,7 +2739,7 @@ Return:
         "restore": "snapshot-name"
     }
 
-### PATCH (ETag supported)
+#### PATCH (ETag supported)
  * Description: update the storage volume information
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2625,7 +2754,7 @@ Return:
         }
     }
 
-### DELETE
+#### DELETE
  * Description: delete a storage volume of a given type on a given storage pool
  * Introduced: with API extension `storage`
  * Authentication: trusted
@@ -2638,8 +2767,8 @@ Input (none at present):
     }
 
 
-## `/1.0/storage-pools/<pool>/volumes/<type>/<name>/snapshots`
-### GET
+### `/1.0/storage-pools/<pool>/volumes/<type>/<name>/snapshots`
+#### GET
  * Description: List of volume snapshots
  * Authentication: trusted
  * Operation: sync
@@ -2651,7 +2780,7 @@ Return value:
         "/1.0/storage-pools/default/volumes/custom/foo/snapshots/snap0"
     ]
 
-### POST
+#### POST
  * Description: create a new volume snapshot
  * Authentication: trusted
  * Operation: async
@@ -2663,8 +2792,8 @@ Input:
         "name": "my-snapshot",          # Name of the snapshot
     }
 
-## `/1.0/storage-pools/<pool>/volumes/<type>/<volume>/snapshots/name`
-### GET
+### `/1.0/storage-pools/<pool>/volumes/<type>/<volume>/snapshots/name`
+#### GET
  * Description: Snapshot information
  * Authentication: trusted
  * Operation: sync
@@ -2678,7 +2807,7 @@ Return:
         "name": "snap0"
     }
 
-### PUT
+#### PUT
  * Description: Volume snapshot information
  * Authentication: trusted
  * Operation: sync
@@ -2690,7 +2819,7 @@ Input:
         "description": "new-description"
     }
 
-### POST
+#### POST
  * Description: used to rename the volume snapshot
  * Authentication: trusted
  * Operation: async
@@ -2702,7 +2831,7 @@ Input:
         "name": "new-name"
     }
 
-### DELETE
+#### DELETE
  * Description: remove the volume snapshot
  * Authentication: trusted
  * Operation: async
@@ -2710,8 +2839,8 @@ Input:
 
 HTTP code for this should be 202 (Accepted).
 
-## `/1.0/resources`
-### GET
+### `/1.0/resources`
+#### GET
  * Description: information about the resources available to the LXD server
  * Introduced: with API extension `resources`
  * Authentication: guest, untrusted or trusted
@@ -2748,8 +2877,8 @@ Return:
         }
     }
 
-## `/1.0/cluster`
-### GET
+### `/1.0/cluster`
+#### GET
  * Description: information about a cluster (such as networks and storage pools)
  * Introduced: with API extension `clustering`
  * Authentication: trusted or untrusted
@@ -2777,7 +2906,7 @@ Return:
         ],
     }
 
-### PUT
+#### PUT
  * Description: bootstrap or join a cluster, or disable clustering on this node
  * Introduced: with API extension `clustering`
  * Authentication: trusted
@@ -2823,8 +2952,8 @@ Input (disable clustering on the node):
         "enabled": false,
     }
 
-## `/1.0/cluster/members`
-### GET
+### `/1.0/cluster/members`
+#### GET
  * Description: list of LXD members in the cluster
  * Introduced: with API extension `clustering`
  * Authentication: trusted
@@ -2838,8 +2967,8 @@ Return:
         "/1.0/cluster/members/lxd2"
     ]
 
-## `/1.0/cluster/members/<name>`
-### GET
+### `/1.0/cluster/members/<name>`
+#### GET
  * Description: retrieve the member's information and status
  * Introduced: with API extension `clustering`
  * Authentication: trusted
@@ -2855,7 +2984,7 @@ Return:
         "state": "Online"
     }
 
-### POST
+#### POST
  * Description: rename a cluster member
  * Introduced: with API extension `clustering`
  * Authentication: trusted
@@ -2868,7 +2997,7 @@ Input:
         "server_name": "node1",
     }
 
-### DELETE (optional `?force=1`)
+#### DELETE (optional `?force=1`)
  * Description: remove a member of the cluster
  * Introduced: with API extension `clustering`
  * Authentication: trusted

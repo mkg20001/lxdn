@@ -1,3 +1,4 @@
 #!/bin/bash
 
-wget https://raw.githubusercontent.com/lxc/lxd/master/doc/rest-api.md
+wget https://raw.githubusercontent.com/lxc/lxd/master/doc/rest-api.md -O rest-api.md
+

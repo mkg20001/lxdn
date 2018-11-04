@@ -7,7 +7,7 @@ process.chdir(__dirname)
 
 const fs = require('fs')
 const content = String(fs.readFileSync('./rest-api.md'))
-let data = content.split('# API details')[1].split('\n').filter(l => l.trim())
+let data = content.split('## API details')[1].split('\n').filter(l => l.trim())
 
 let parsed = []
 let me
@@ -18,7 +18,7 @@ let subMe
 data.forEach(line => {
   let s = line.split(' ')
   switch (true) {
-    case line.startsWith('## '): { // ## `/url`
+    case line.startsWith('### '): { // ### `/url`
       if (me) {
         parsed.push(me)
       }
@@ -29,7 +29,7 @@ data.forEach(line => {
       }
       break
     }
-    case line.startsWith('### '): { // ### PATCH (ETag supported)
+    case line.startsWith('#### '): { // ### PATCH (ETag supported)
       subMe = me.methods[s[1]] = {
         name: s[1],
         comment: s.slice(2).join(' ').replace(/[()]/gmi, '') || null,
