@@ -78,23 +78,27 @@ class Client {
     }
 
     // local
-    this.isLocal = host === undefined
+    let useSocket = this.isLocal = host === undefined || host.startsWith('/')
 
     // path
-    if (host) {
+    if (!useSocket) {
       this.address = protocol + '//' + hostname
       if (port) {
         this.address += ':' + port
       }
     } else {
-      this.address = 'http://unix:/var/lib/lxd/unix.socket:'
+      if (!host) {
+        host = '/var/lib/lxd/unix.socket'
+      }
+
+      this.address = 'http://unix:' + host + ':'
     }
 
     // websocket path
-    if (host) {
+    if (!useSocket) {
       this.wsAddress = 'ws://' + hostname + (port ? ':' + 'port' : '') + '/'
     } else {
-      this.wsAddress = 'ws+unix:///var/lib/lxd/unix.socket:'
+      this.wsAddress = 'ws+unix://' + host + ':'
     }
 
     if (auth && auth.cert && auth.key) {
