@@ -70,15 +70,16 @@ class Client {
     log('creating client for %s', host || '<local>')
 
     let protocol, hostname, port
-    if (host) {
-      const hostUrl = URL.parse(host)
+
+    // local
+    let useSocket = this.isLocal = host === undefined || host.startsWith('/')
+
+    if (!useSocket) {
+      const hostUrl = new URL(host)
       protocol = hostUrl.protocol
       hostname = hostUrl.hostname
       port = hostUrl.port
     }
-
-    // local
-    let useSocket = this.isLocal = host === undefined || host.startsWith('/')
 
     // path
     if (!useSocket) {
