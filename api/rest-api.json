@@ -335,6 +335,16 @@
         "async"
       ],
       "return": "background operation or standard error"
+    },
+    "PUT": {
+      "description": "update the snapshot",
+      "authentication": [
+        "trusted"
+      ],
+      "operation": [
+        "async"
+      ],
+      "return": "background operation or standard error"
     }
   },
   "/1.0/containers/<name>/state": {
