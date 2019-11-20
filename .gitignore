@@ -1,4 +1,12 @@
+
+# custom
+
 node_modules
 package-lock.json
 *.bak
 src/api.js
+
+# node
+
+yarn-error.log
+yarn.lock

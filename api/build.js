@@ -7,16 +7,16 @@ process.chdir(__dirname)
 
 const fs = require('fs')
 const content = String(fs.readFileSync('./rest-api.md'))
-let data = content.split('## API details')[1].split('\n').filter(l => l.trim())
+const data = content.split('## API details')[1].split('\n').filter(l => l.trim())
 
-let parsed = []
+const parsed = []
 let me
 let subMe
 
 // parse data
 
 data.forEach(line => {
-  let s = line.split(' ')
+  const s = line.split(' ')
   switch (true) {
     case line.startsWith('### '): { // ### `/url`
       if (me) {
@@ -38,12 +38,12 @@ data.forEach(line => {
       break
     }
     case line.startsWith(' * ') && line.indexOf(':') !== -1: { // * Description: ...
-      let name = s[2].toLowerCase().replace(':', '')
+      const name = s[2].toLowerCase().replace(':', '')
       subMe.meta[name] = s.slice(3).join(' ')
       break
     }
     case line.startsWith('* '): { //* Description: ...
-      let name = s[1].toLowerCase().replace(':', '')
+      const name = s[1].toLowerCase().replace(':', '')
       subMe.meta[name] = s.slice(2).join(' ')
       break
     }
@@ -55,7 +55,7 @@ data.forEach(line => {
 
 // turn parsed data into usable data
 
-let out = {}
+const out = {}
 parsed.forEach(prop => {
   const propOut = {}
 
@@ -108,8 +108,8 @@ function c (name) {
   return name.replace(/[<>]/gmi, '')
 }
 
-let restApi = out
-let tree = {
+const restApi = out
+const tree = {
   methods: {}
 }
 
@@ -121,12 +121,12 @@ delete restApi['/1.0/']
 
 Object.keys(restApi).sort((a, b) => a.length - b.length)/* sort by length so low-level stuff goes first */.forEach(path => {
   const obj = restApi[path]
-  let name = path.replace('/1.0/', '').split('/')
+  const name = path.replace('/1.0/', '').split('/')
   for (const method in obj) { // eslint-disable-line guard-for-in
     const me = obj[method]
     let stack = name.slice(0).concat(method.toLowerCase())
     stack = stack.reduce((a, b) => {
-      let la = a[a.length - 1]
+      const la = a[a.length - 1]
       if (Array.isArray(la[la.length - 1])) { // is function, accepts only params
         if (b.startsWith('<')) {
           la[la.length - 1].push(c(b))
@@ -147,10 +147,10 @@ Object.keys(restApi).sort((a, b) => a.length - b.length)/* sort by length so low
     let curTree = tree
 
     while (stack.length) {
-      let el = stack.shift()
-      let last = el.pop()
-      let elId = el.join('.')
-      let isLast = !stack.length
+      const el = stack.shift()
+      const last = el.pop()
+      const elId = el.join('.')
+      const isLast = !stack.length
       if (!curTree.methods) {
         curTree.methods = {}
       }
@@ -176,21 +176,21 @@ Object.keys(restApi).sort((a, b) => a.length - b.length)/* sort by length so low
 const dset = require('dset')
 
 function iter (curTree, l) {
-  let outD = {}
-  let outF = {}
+  const outD = {}
+  const outF = {}
 
   for (const methodID in curTree.methods) { // eslint-disable-line guard-for-in
-    let methodData = curTree.methods[methodID]
+    const methodData = curTree.methods[methodID]
 
-    let ms = methodID.split('.')
-    let msFull = ms.slice(0)
+    const ms = methodID.split('.')
+    const msFull = ms.slice(0)
     let httpVerb
 
     if (!methodData.param) {
       httpVerb = ms.pop().toUpperCase()
     }
 
-    let msCode = msFull.map(s => s.replace(/-([a-z])/, (_, l) => l.toUpperCase()))
+    const msCode = msFull.map(s => s.replace(/-([a-z])/, (_, l) => l.toUpperCase()))
 
     if (methodData.param) {
       dset(outF, msCode, `(...params) => {
@@ -217,7 +217,7 @@ function iter (curTree, l) {
   }
 
   function functionObjectStringify (o) { // stringifies as object with strings treated as literal code
-    let a = []
+    const a = []
     for (const key in o) { // eslint-disable-line guard-for-in
       let v = JSON.stringify(key) + ':'
       if (typeof o[key] === 'object') {
@@ -234,7 +234,7 @@ function iter (curTree, l) {
 }
 
 // beautify & minify code
-let code = require('terser').minify(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree, 0)), {output: {beautify: true}})
+const code = require('terser').minify(String(fs.readFileSync('./template.js')).replace('/* CODE */', iter(tree, 0)), { output: { beautify: true } })
 if (code.error) {
   throw code.error
 }
